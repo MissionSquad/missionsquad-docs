@@ -1,0 +1,14 @@
+name = "ms-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-06-01"
+workers_dev = true
+
+[vars]
+# Non-sensitive default; override in dashboard or via environment
+MS_BASE_URL = "https://agents.missionsquad.ai/v1"
+
+# Secrets:
+# Add MS_API_KEY via: `yarn dlx wrangler secret put MS_API_KEY`
+
+[observability.logs]
+enabled = true

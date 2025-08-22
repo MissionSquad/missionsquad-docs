@@ -1,0 +1,31 @@
+{
+  "name": "missionsquad-docs",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "build:search": "tsx scripts/buildSearchIndex.ts",
+    "build:all": "yarn build:search && yarn build",
+    "worker:deploy": "cd worker && npx -y wrangler deploy",
+    "worker:secret": "cd worker && npx -y wrangler secret put MS_API_KEY"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "fast-glob": "^3.3.2",
+    "github-slugger": "^2.0.0",
+    "gray-matter": "^4.0.3",
+    "remark-parse": "^11.0.0",
+    "strip-markdown": "^6.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "unified": "^11.0.0",
+    "vitepress": "^1.6.4",
+    "wrangler": "^4.32.0"
+  }
+}
