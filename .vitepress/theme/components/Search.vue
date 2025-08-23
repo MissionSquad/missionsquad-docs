@@ -216,6 +216,10 @@ function onAskAI(): void {
   const q = query.value.trim();
   if (!q) return;
   closeOverlay();
+  // Clear search state so the next open does not show old results
+  query.value = '';
+  results.value = [];
+  selected.value = -1;
   window.dispatchEvent(new CustomEvent('ms-ask-open', { detail: { question: q } }));
 }
 
