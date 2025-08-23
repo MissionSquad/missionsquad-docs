@@ -68,7 +68,7 @@ async function embedQuery(q: string): Promise<Embedding> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: index.data?.embeddingModel ?? 'text-embedding-3-large',
+      model: index.data?.embeddingModel ?? 'text-embedding-3-small',
       input: [q]
     })
   });
