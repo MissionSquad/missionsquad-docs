@@ -10,13 +10,13 @@ export default defineConfig({
     server: {
       proxy: {
         "/api/embed": {
-          target: "https://agents.missionsquad.ai",
+          target: "https://docs.missionsquad.ai",
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/dev-api/, ""),
           // Explicitly set safe headers for CF WAF; dev Referer from localhost can be blocked
           headers: {
-            referer: "https://agents.missionsquad.ai/",
-            origin: "https://agents.missionsquad.ai"
+            referer: "https://docs.missionsquad.ai/",
+            origin: "https://docs.missionsquad.ai",
           },
           // Strip Referer/Origin at the proxy layer to avoid CF WAF blocks from localhost dev
           configure: (proxy) => {
@@ -28,17 +28,17 @@ export default defineConfig({
                 // ignore
               }
             });
-          }
+          },
           // secure: false, // uncomment if using self-signed https backend
           // ws: true, // uncomment if backend uses websockets
         },
         "/api/ask": {
-          target: "https://agents.missionsquad.ai",
+          target: "https://docs.missionsquad.ai",
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/dev-api/, ""),
           headers: {
-            referer: "https://agents.missionsquad.ai/",
-            origin: "https://agents.missionsquad.ai"
+            referer: "https://docs.missionsquad.ai/",
+            origin: "https://docs.missionsquad.ai",
           },
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq) => {
@@ -49,10 +49,10 @@ export default defineConfig({
                 // ignore
               }
             });
-          }
+          },
           // secure: false, // uncomment if using self-signed https backend
           // ws: true, // uncomment if backend uses websockets
-        }
+        },
       },
     },
   },

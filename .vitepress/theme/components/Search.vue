@@ -16,6 +16,7 @@ interface DocChunk {
 
 interface SearchIndex {
   model: string;
+  embeddingModel: string;
   dims: number;
   builtAt: string;
   chunks: DocChunk[];
@@ -35,7 +36,7 @@ const selected = ref<number>(-1);
 async function loadIndex(): Promise<void> {
   const r = await fetch('/search-index.json', { headers: { Accept: 'application/json' } });
   if (!r.ok) {
-    index.data = { model: '', dims: 0, builtAt: new Date().toISOString(), chunks: [] };
+    index.data = { model: '', embeddingModel: '', dims: 0, builtAt: new Date().toISOString(), chunks: [] };
     return;
   }
   index.data = (await r.json()) as SearchIndex;
@@ -67,7 +68,7 @@ async function embedQuery(q: string): Promise<Embedding> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: index.data?.model ?? 'text-embedding-3-large',
+      model: index.data?.embeddingModel ?? 'text-embedding-3-large',
       input: [q]
     })
   });

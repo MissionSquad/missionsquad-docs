@@ -12,3 +12,11 @@ MS_BASE_URL = "https://agents.missionsquad.ai/v1"
 
 [observability.logs]
 enabled = true
+
+[[routes]]
+pattern = "docs.missionsquad.ai/api/ask*"
+zone_name = "missionsquad.ai"
+
+[[routes]]
+pattern = "docs.missionsquad.ai/api/embed*"
+zone_name = "missionsquad.ai"

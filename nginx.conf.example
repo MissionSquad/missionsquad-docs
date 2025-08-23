@@ -1,0 +1,65 @@
+# Example Nginx config for serving VitePress statics and proxying /api/* to the Cloudflare Worker (SSE)
+# Adjust paths, domains, and TLS settings to your environment.
+
+server {
+  listen 443 ssl http2;
+  server_name docs.your-domain.com;
+
+  # TLS configuration (example placeholders)
+  ssl_certificate     /etc/letsencrypt/live/docs.your-domain.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/docs.your-domain.com/privkey.pem;
+
+  # Path to the built VitePress site (copy docs/.vitepress/dist/* here after build)
+  root /srv/www/docs;
+
+  # Serve static files with clean URLs
+  location / {
+    try_files $uri $uri.html $uri/ =404;
+  }
+
+  # SSE-friendly proxy to your Cloudflare Worker for /api/*
+  location /api/ {
+    # Use your Worker custom domain (recommended) or workers.dev mapping
+    # Examples:
+    #   set $worker_origin https://ms-proxy.your-domain.com;           # custom domain
+    #   set $worker_origin https://ms-proxy.youraccount.workers.dev;   # workers.dev
+    set $worker_origin https://ms-proxy.youraccount.workers.dev;
+
+    proxy_pass $worker_origin$request_uri;
+    proxy_http_version 1.1;
+
+    # Upstream Host/SNI MUST match the Worker domain
+    proxy_set_header Host $proxy_host;          # ensure Host matches $worker_origin host
+    proxy_set_header X-Forwarded-Host $host;    # preserve original host for app logs
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Real-IP $remote_addr;
+
+    # TLS SNI for workers.dev/custom domain
+    proxy_ssl_server_name on;
+    proxy_ssl_name $proxy_host;
+
+    # DNS resolver (required when using variables in proxy_pass; also useful for runtime DNS updates)
+    resolver 1.1.1.1 1.0.0.1 valid=300s;
+    resolver_timeout 5s;
+
+    # SSE streaming (disable buffering and compression)
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_read_timeout 3600s;
+    chunked_transfer_encoding off;
+    proxy_set_header X-Accel-Buffering no;
+    proxy_set_header Accept-Encoding "";
+
+    # Avoid WebSocket upgrade semantics for SSE
+    proxy_set_header Connection "";
+  }
+}
+
+# Optional HTTP->HTTPS redirect
+server {
+  listen 80;
+  server_name docs.your-domain.com;
+  return 301 https://$host$request_uri;
+}
+
+curl -N -X POST "https://ms-proxy.missionsquad.workers.dev/api/ask" -H "content-type: application/json" --data '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"ping"}],"stream":true}'
