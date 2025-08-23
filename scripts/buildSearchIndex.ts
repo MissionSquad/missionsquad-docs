@@ -7,6 +7,8 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import strip from 'strip-markdown';
 import GithubSlugger from 'github-slugger';
+import 'dotenv/config';
+import remarkStringify from 'remark-stringify';
 
 type Embedding = readonly number[];
 
@@ -23,6 +25,7 @@ interface DocChunk {
 
 interface SearchIndex {
   model: string;
+  embeddingModel: string;
   dims: number;
   builtAt: string;
   chunks: DocChunk[];
@@ -41,7 +44,7 @@ function assertEnv(): void {
 }
 
 async function mdToPlain(md: string): Promise<string> {
-  const file = await unified().use(remarkParse).use(strip).process(md);
+  const file = await unified().use(remarkParse).use(strip).use(remarkStringify).process(md);
   return String(file).replace(/\s+/g, ' ').trim();
 }
 
@@ -76,6 +79,17 @@ function* chunkByHeadings(
   }
 }
 
+interface MSWrappedEmbeddingResponse {
+  embeddings: number[][];
+  usage: { promptTokens: number; totalTokens: number };
+  model: string;
+  rawResponse: {
+    object: 'list';
+    data: Array<{ object: 'embedding'; index: number; embedding: number[] }>;
+    model: string;
+    usage: { prompt_tokens: number; total_tokens: number };
+  };
+}
 async function embedBatch(texts: readonly string[]): Promise<Embedding[]> {
   const base = MS_BASE;
   const endpoint = base.endsWith('/v1') ? `${base}/embeddings` : `${base}/v1/embeddings`;
@@ -88,8 +102,11 @@ async function embedBatch(texts: readonly string[]): Promise<Embedding[]> {
     body: JSON.stringify({ model: MS_EMBED_MODEL, input: texts })
   });
   if (!res.ok) throw new Error(`Embeddings HTTP ${res.status}`);
-  const json: { data: Array<{ embedding: number[] }>; model: string } = await res.json();
-  return json.data.map((d) => d.embedding);
+  const json = (await res.json()) as MSWrappedEmbeddingResponse;
+  if (!Array.isArray(json.embeddings)) {
+    throw new Error('Invalid embeddings response: missing embeddings[]');
+  }
+  return json.embeddings;
 }
 
 async function main(): Promise<void> {
@@ -146,7 +163,8 @@ async function main(): Promise<void> {
   });
 
   const index: SearchIndex = {
-    model: MS_EMBED_MODEL,
+    model: 'docs-agent',
+    embeddingModel: MS_EMBED_MODEL,
     dims,
     builtAt: new Date().toISOString(),
     chunks
