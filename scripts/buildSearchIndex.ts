@@ -37,7 +37,7 @@ const OUT_FILE = path.join(PUBLIC_DIR, 'search-index.json');
 
 const MS_BASE = (process.env.MS_BASE_URL ?? 'https://your-ms.example.com').replace(/\/+$/, '');
 const MS_KEY = process.env.MS_API_KEY ?? '';
-const MS_EMBED_MODEL = process.env.MS_EMBED_MODEL ?? 'text-embedding-3-large';
+const MS_EMBED_MODEL = process.env.MS_EMBED_MODEL ?? 'text-embedding-3-small';
 
 function assertEnv(): void {
   if (!MS_KEY) throw new Error('Missing MS_API_KEY');

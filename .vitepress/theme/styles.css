@@ -1,0 +1,9 @@
+:root {
+  --msq-zoom-z: 9999;
+}
+
+/* bump if your header/modal uses > 9999 */
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: var(--msq-zoom-z) !important;
+}

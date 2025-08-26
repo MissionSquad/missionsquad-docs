@@ -2,64 +2,35 @@
 title: Platform Overview
 ---
 
-# MissionSquad Platform (Cloud or Customer‑Hosted UI)
+# Mission Squad Platform UI
 
-This section documents the MissionSquad Platform UI. It covers dashboard navigation, managing providers/models/agents, vector stores and files, usage metrics, and workspace settings. The Platform can be deployed as:
-- Cloud‑hosted by MissionSquad
-- Customer‑hosted (self‑managed) UI
+This section documents the Mission Squad Platform UI. It covers dashboard navigation, managing providers/models/agents, MCP tools, embeddings (vector stores and files), workflows, schedules, security, and troubleshooting. Each page includes API parity links to keep UI and API usage aligned.
 
-The detailed guides below will be filled in next.
+- [Getting Started](/platform/getting-started)
+- [API docs](/api/)
+- [Endpoint Index](/api/reference/endpoint-index)
 
-## What You Can Do in the Platform
+## Guides
 
-- Providers
-  - Connect and manage upstream AI providers (keys/URLs masked in UI and APIs)
-- Models
-  - Discover provider models and add them to your workspace (chat and embeddings)
-- Agents
-  - Create named agents, configure prompts, link underlying models, and manage options
-- Vector Stores
-  - Create stores, manage chunking strategies, embed files, cancel embedding sessions
-- Files
-  - Upload, view metadata, remove, and associate files with vector stores
-- Tools & Servers
-  - Inspect available tools and MCP servers (where applicable)
-- Usage & Diagnostics
-  - Review high‑level health, diagnostics, and usage information
-- Workspace Settings
-  - Configure keys, base URLs, organization/project settings (as applicable)
+- [Providers](/platform/providers) — connect and manage upstream AI providers
+- [Models](/platform/models) — discover vendor models and save named configurations
+- [Agents](/platform/agents) — create agents (prompts, models, tools, RAG)
+- [MCP (Tools)](/platform/mcp) — connect tool servers and inspect available functions
+- [Prompt Studio](/platform/prompt-studio) — iterate prompts, stream events, save back to agents
+- [Embeddings](/platform/embeddings) — upload files, manage vector stores, diagnostics
+- [Workflows](/platform/workflows) — compose multi‑agent pipelines
+- [Schedules](/platform/schedules) — run agents/workflows on a cadence with delivery
+- [Recipes](/platform/recipes) — opinionated end‑to‑end examples
+- [Security & Isolation](/platform/security) — guarantees and best practices
+- [Troubleshooting](/platform/troubleshooting) — common issues and quick checks
 
-## Deployment Modes
+## Concepts at a glance
 
-- Cloud‑hosted
-  - Managed by MissionSquad, minimal setup
-- Customer‑hosted
-  - Self‑deployed in your environment; integrates with your security and networking controls
-
-## Navigation Overview (Coming Soon)
-
-- Dashboard
-- Providers
-- Models
-- Agents
-- Vector Stores
-- Files
-- Tools/Servers
-- Usage/Diagnostics
-- Settings
-
-## Upcoming Guides (Placeholders)
-
-The following pages will be added to detail the Platform workflows:
-
-- Platform Getting Started (/platform/getting-started) — initial setup, linking providers, first model/agent
-- Providers (/platform/providers) — adding/removing providers, key management, overrides
-- Models (/platform/models) — discovery, adding models, embedding models
-- Agents (/platform/agents) — creating and maintaining agents, prompts and options
-- Vector Stores (/platform/vector-stores) — creating stores, chunking strategies, embedding/cancel flows
-- Files (/platform/files) — uploads, metadata, association with vector stores
-- Tools & Servers (/platform/tools-servers) — tool inventories and MCP server visibility
-- Usage & Diagnostics (/platform/usage) — health indicators, diagnostics, and common checks
-- Settings (/platform/settings) — workspace configuration, environment-specific options
-
-Each guide will include screenshots, step‑by‑step procedures, and references back to API endpoints where relevant.
+- Providers: secure, per‑account credentials for model vendors (OpenAI, Google, Anthropic, Groq, OpenAI‑compatible runtimes).
+- Models: named configurations per provider model (temperature, max tokens, etc.).
+- Agents: model + system prompt with optional Tools (MCP) and RAG collections.
+- MCP: Model Context Protocol servers that expose callable tools.
+- Prompt Studio: scratchpad to test agents/models and watch tool events.
+- Embeddings: files and vector stores used for RAG.
+- Workflows: multi‑agent orchestration (helpers → primary).
+- Schedules: recurring agent/workflow runs with delivery.

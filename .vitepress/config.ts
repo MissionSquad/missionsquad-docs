@@ -67,6 +67,23 @@ export default defineConfig({
           text: "Overview",
           items: [{ text: "Platform Overview", link: "/platform/" }],
         },
+        {
+          text: "Guides",
+          items: [
+            { text: "Getting Started", link: "/platform/getting-started" },
+            { text: "Providers", link: "/platform/providers" },
+            { text: "Models", link: "/platform/models" },
+            { text: "Agents", link: "/platform/agents" },
+            { text: "MCP (Tools)", link: "/platform/mcp" },
+            { text: "Prompt Studio", link: "/platform/prompt-studio" },
+            { text: "Embeddings", link: "/platform/embeddings" },
+            { text: "Workflows", link: "/platform/workflows" },
+            { text: "Schedules", link: "/platform/schedules" },
+            { text: "Recipes", link: "/platform/recipes" },
+            { text: "Security & Isolation", link: "/platform/security" },
+            { text: "Troubleshooting", link: "/platform/troubleshooting" }
+          ]
+        }
       ],
       "/api/": [
         {

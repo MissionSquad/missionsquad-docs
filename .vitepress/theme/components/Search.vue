@@ -419,7 +419,6 @@ onBeforeUnmount(() => {
 }
 
 .recent-list { display: grid; gap: .35rem; }
-.recent-item {}
 .recent-btn {
   width: 100%;
   text-align: left;
