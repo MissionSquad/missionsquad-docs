@@ -36,6 +36,117 @@ Related:
   - Secret Manager holds: `MONGO_PASS`, `USER_SECRET_KEY`, `JWT_SECRET`, `ADMIN_PASSWORD`, `SMTP_PASS`.
   - Cloud Run service account requires `roles/secretmanager.secretAccessor` on each secret.
 
+### Architecture diagrams (Marketplace‑aligned)
+
+Pattern 1 — All components primarily on Google Cloud (recommended for Marketplace):
+```mermaid
+flowchart LR
+  Internet((Internet))
+
+  subgraph GCP[Google Cloud — Partner Project]
+    direction LR
+
+    subgraph CloudRun[Cloud Run Gen2]
+      MSQAPI[msq-api - public ingress]
+      MCPAPI[mcp-api - internal ingress]
+    end
+
+    subgraph Net[VPC Networking]
+      ILB[Internal HTTP Load Balancer - MCP ILB]
+      VPCConn[Serverless VPC Access Connector]
+    end
+
+    Secrets[Secret Manager]
+    GCSData[(GCS Bucket: msq-data)]
+    GCSLicense[(GCS Bucket: msq-license)]
+    GCSPkgs[(GCS Bucket: mcp-packages)]
+  end
+
+  subgraph Atlas[MongoDB Atlas — GCP Region]
+    Mongo[(MongoDB Cluster<br/>Private Service Endpoint / Peering)]
+  end
+
+  Internet --> MSQAPI
+  MSQAPI --> ILB
+  ILB --> MCPAPI
+
+  MSQAPI -- "mount /app/data" --> GCSData
+  MSQAPI -- "mount /app/data/license" --> GCSLicense
+  MCPAPI -- "mount /app/packages" --> GCSPkgs
+
+  MSQAPI -- "read secrets" --> Secrets
+  MCPAPI -- "read secrets" --> Secrets
+
+  MSQAPI -- "private egress" --> VPCConn
+  MCPAPI -- "private egress" --> VPCConn
+  VPCConn --> Mongo
+```
+
+Pattern 2 — Compute/data plane on Google Cloud, external supporting services (also Marketplace‑eligible):
+```mermaid
+flowchart LR
+  Internet((Internet))
+
+  subgraph GCP[Google Cloud — Partner Project]
+    direction LR
+
+    subgraph CloudRun[Cloud Run Gen2]
+      MSQAPI[msq-api - public ingress]
+      MCPAPI[mcp-api - internal ingress]
+    end
+
+    subgraph Net[VPC Networking]
+      ILB[Internal HTTP Load Balancer - MCP ILB]
+      VPCConn[Serverless VPC Access Connector]
+    end
+
+    Secrets[Secret Manager]
+    GCSData[(GCS: msq-data)]
+    GCSLicense[(GCS: msq-license)]
+    GCSPkgs[(GCS: mcp-packages)]
+  end
+
+  subgraph External[External / Other Cloud / On‑prem]
+    MongoExt[(MongoDB Atlas Cluster)]
+    SearxExt[(SearXNG — optional web search)]
+    SMTP[(SMTP Provider)]
+  end
+
+  Internet --> MSQAPI
+  MSQAPI --> ILB
+  ILB --> MCPAPI
+
+  MSQAPI -- "mount" --> GCSData
+  MSQAPI -- "mount" --> GCSLicense
+  MCPAPI -- "mount" --> GCSPkgs
+
+  MSQAPI -- "read secrets" --> Secrets
+  MCPAPI -- "read secrets" --> Secrets
+
+  MSQAPI -- "egress via VPC Connector" --> VPCConn
+  MCPAPI -- "egress via VPC Connector" --> VPCConn
+  VPCConn --> MongoExt
+  VPCConn --> SearxExt
+  VPCConn --> SMTP
+```
+
+Marketplace alignment checklist:
+- Organization:
+  - Join and remain in good standing with Google Cloud Partner Advantage and maintain a Cloud Marketplace vendor account and payment profile.
+  - Incorporation in supported regions.
+- Product:
+  - Production‑ready (not alpha/beta), enterprise‑ready: professional site, documented support model, strong security practices (SBOMs, vuln scanning, patch cadence).
+  - Same capabilities for Marketplace and non‑Marketplace offerings.
+  - No malicious code; data products contain no “personally identifiable sensitive information” per PADFA 2024.
+- Hosting on Google Cloud:
+  - Pattern 1: Prefer deploying MongoDB Atlas on GCP with Private Service Connect or VPC peering (entire product runs on GCP).
+  - Pattern 2: If external support services (e.g., SMTP, search, or off‑GCP Atlas) are used, ensure the Google Cloud–hosted compute/data plane is the usage driver as customers scale.
+- Operational best practices:
+  - Define SLOs, logging/monitoring with Cloud Logging/Monitoring, on‑call support processes.
+  - Configure minimum instances to avoid cold starts; regular security updates to base images; rotate secrets via Secret Manager versions.
+- Change control:
+  - Re‑notify Google if changes affect compliance or previously submitted documentation.
+
 ## 2) Prerequisites
 
 - gcloud CLI installed and authenticated.

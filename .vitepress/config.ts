@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitepress';
+import { withMermaid } from "vitepress-plugin-mermaid";
 
-export default defineConfig({
+export default withMermaid({
   title: "Mission Squad Docs",
   description: "MissionSquad API and Guides",
   srcDir: ".",
@@ -59,6 +59,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: "Platform", link: "/platform/" },
+      { text: "Hosting", link: "/hosting/" },
       { text: "API", link: "/api/" },
     ],
     sidebar: {
@@ -112,4 +113,12 @@ export default defineConfig({
       ],
     },
   },
+  // Mermaid options (optional)
+  mermaid: {
+    // Refer to https://mermaid.js.org/config/setup/modules/mermaidAPI.html#mermaidapi-configuration-defaults
+  },
+  // Plugin container options (optional)
+  mermaidPlugin: {
+    class: "mermaid"
+  }
 });

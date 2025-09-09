@@ -4,6 +4,7 @@ Welcome to the Mission Squad documentation. Use the navigation to explore the Pl
 
 - [Platform UI](/platform/)
 - [Getting Started (Platform)](/platform/getting-started)
+- [Hosting](/hosting/)
 - [API Overview](/api/)
 - [Endpoint Index](/api/reference/endpoint-index)
 
