@@ -34,3 +34,4 @@ Quick links:
 
 - New to the UI? Begin with: [Getting Started](/platform/getting-started)
 - Prefer API-first? Start here: [API](/api/)
+- Self-hosting via Docker & Compose: [Hosting](/hosting/)

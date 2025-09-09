@@ -23,6 +23,7 @@ This section documents the Mission Squad Platform UI. It covers dashboard naviga
 - [Recipes](/platform/recipes) — opinionated end‑to‑end examples
 - [Security & Isolation](/platform/security) — guarantees and best practices
 - [Troubleshooting](/platform/troubleshooting) — common issues and quick checks
+- [Hosting](/hosting/) — deploy the Platform API and MCP via Docker & Compose
 
 ## Concepts at a glance
 
