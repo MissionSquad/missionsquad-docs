@@ -21,6 +21,17 @@ Related:
 
 ## 1) Architecture
 
+
+#### Overview
+
+```mermaid
+flowchart TB
+  Internet((Internet)) --> MSQAPI[msq-api - public ingress] --> ILB[Internal HTTP LB<br/>MCP ILB] --> MCPAPI[mcp-api - internal ingress] --> VPCConn[Serverless VPC Access<br/>Connector]
+  VPCConn --> MongoExt[(MongoDB Atlas)]
+  VPCConn --> SearxExt[(SearXNG - optional)]
+  VPCConn --> SMTP[(SMTP provider)]
+```
+
 - Services
   - msq-api (public ingress): Mission Squad API, OpenAI‑compatible endpoints, vector stores/files/core.
   - mcp-api (internal ingress): MCP gateway (tools). Not publicly exposed.
@@ -35,100 +46,6 @@ Related:
 - Secrets
   - Secret Manager holds: `MONGO_PASS`, `USER_SECRET_KEY`, `JWT_SECRET`, `ADMIN_PASSWORD`, `SMTP_PASS`.
   - Cloud Run service account requires `roles/secretmanager.secretAccessor` on each secret.
-
-### Architecture diagrams (Marketplace‑aligned)
-
-Pattern 1 — All components primarily on Google Cloud (recommended for Marketplace):
-```mermaid
-flowchart LR
-  Internet((Internet))
-
-  subgraph GCP[Google Cloud — Partner Project]
-    direction LR
-
-    subgraph CloudRun[Cloud Run Gen2]
-      MSQAPI[msq-api - public ingress]
-      MCPAPI[mcp-api - internal ingress]
-    end
-
-    subgraph Net[VPC Networking]
-      ILB[Internal HTTP Load Balancer - MCP ILB]
-      VPCConn[Serverless VPC Access Connector]
-    end
-
-    Secrets[Secret Manager]
-    GCSData[(GCS Bucket: msq-data)]
-    GCSLicense[(GCS Bucket: msq-license)]
-    GCSPkgs[(GCS Bucket: mcp-packages)]
-  end
-
-  subgraph Atlas[MongoDB Atlas — GCP Region]
-    Mongo[(MongoDB Cluster<br/>Private Service Endpoint / Peering)]
-  end
-
-  Internet --> MSQAPI
-  MSQAPI --> ILB
-  ILB --> MCPAPI
-
-  MSQAPI -- "mount /app/data" --> GCSData
-  MSQAPI -- "mount /app/data/license" --> GCSLicense
-  MCPAPI -- "mount /app/packages" --> GCSPkgs
-
-  MSQAPI -- "read secrets" --> Secrets
-  MCPAPI -- "read secrets" --> Secrets
-
-  MSQAPI -- "private egress" --> VPCConn
-  MCPAPI -- "private egress" --> VPCConn
-  VPCConn --> Mongo
-```
-
-Pattern 2 — Compute/data plane on Google Cloud, external supporting services (also Marketplace‑eligible):
-```mermaid
-flowchart LR
-  Internet((Internet))
-
-  subgraph GCP[Google Cloud — Partner Project]
-    direction LR
-
-    subgraph CloudRun[Cloud Run Gen2]
-      MSQAPI[msq-api - public ingress]
-      MCPAPI[mcp-api - internal ingress]
-    end
-
-    subgraph Net[VPC Networking]
-      ILB[Internal HTTP Load Balancer - MCP ILB]
-      VPCConn[Serverless VPC Access Connector]
-    end
-
-    Secrets[Secret Manager]
-    GCSData[(GCS: msq-data)]
-    GCSLicense[(GCS: msq-license)]
-    GCSPkgs[(GCS: mcp-packages)]
-  end
-
-  subgraph External[External / Other Cloud / On‑prem]
-    MongoExt[(MongoDB Atlas Cluster)]
-    SearxExt[(SearXNG — optional web search)]
-    SMTP[(SMTP Provider)]
-  end
-
-  Internet --> MSQAPI
-  MSQAPI --> ILB
-  ILB --> MCPAPI
-
-  MSQAPI -- "mount" --> GCSData
-  MSQAPI -- "mount" --> GCSLicense
-  MCPAPI -- "mount" --> GCSPkgs
-
-  MSQAPI -- "read secrets" --> Secrets
-  MCPAPI -- "read secrets" --> Secrets
-
-  MSQAPI -- "egress via VPC Connector" --> VPCConn
-  MCPAPI -- "egress via VPC Connector" --> VPCConn
-  VPCConn --> MongoExt
-  VPCConn --> SearxExt
-  VPCConn --> SMTP
-```
 
 Marketplace alignment checklist:
 - Organization:
@@ -233,6 +150,15 @@ done
 
 ## 5) Storage buckets and IAM
 
+```mermaid
+flowchart TB
+  MSQAPI[msq-api] --> GCSData[(GCS bucket - msq-data)]
+  MSQAPI --> GCSLicense[(GCS bucket - msq-license)]
+  MCPAPI[mcp-api] --> GCSPkgs[(GCS bucket - mcp-packages)]
+  MSQAPI --> Secrets[Secret Manager - read]
+  MCPAPI --> Secrets
+```
+
 Choose bucket names (unique globally):
 ```bash
 export ENVIRONMENT="prod"
@@ -254,6 +180,24 @@ done
 ```
 
 ## 6) Networking (VPC connector and ILB subnets)
+
+#### Internal VPC Networking
+
+```mermaid
+flowchart TB
+  MSQAPI[msq-api] --> VPCConn[Serverless VPC Access<br/>Connector]
+  MCPAPI[mcp-api] --> VPCConn
+  VPCConn --> MongoExt[(MongoDB Atlas)]
+  VPCConn --> SearxExt[(SearXNG - optional)]
+  VPCConn --> SMTP[(SMTP provider)]
+```
+
+#### ILB Routing (msq-api → MCP)
+
+```mermaid
+flowchart TB
+  MSQAPI[msq-api - public ingress] --> ILB[Internal HTTP LB<br/>MCP ILB] --> MCPAPI[mcp-api - internal ingress]
+```
 
 Create/verify a Serverless VPC Access Connector:
 ```bash

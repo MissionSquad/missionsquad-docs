@@ -1,0 +1,43 @@
+/* Center Mermaid diagrams and improve readability at ~700px width */
+.mermaid {
+  display: block;
+  margin: 1.25rem auto;
+  text-align: center;
+  /* allow diagrams to scale but cap width for readability */
+  max-width: 760px;
+}
+
+.mermaid svg {
+  display: block;
+  margin: 0 auto;
+  width: 100% !important;      /* scale to container width */
+  height: auto !important;     /* prevent cropping */
+  max-width: 760px;            /* cap width for readability */
+}
+
+/* Improve node label visibility; prevent clipping */
+.mermaid .node rect,
+.mermaid .node polygon,
+.mermaid .node circle,
+.mermaid .node ellipse {
+  rx: 6;
+  ry: 6;
+}
+
+.mermaid .label foreignObject {
+  overflow: visible !important;
+}
+
+.mermaid .label span,
+.mermaid .label p,
+.mermaid .label div {
+  line-height: 1.25;
+  white-space: normal; /* allow wrapping inside htmlLabels */
+  word-break: break-word;
+}
+
+/* Slightly increase spacing between stacked diagrams */
+.mermaid + h4,
+.mermaid + h3 {
+  margin-top: 2rem;
+}

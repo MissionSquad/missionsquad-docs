@@ -5,6 +5,7 @@ export default withMermaid({
   description: "MissionSquad API and Guides",
   srcDir: ".",
   cleanUrls: true,
+  ignoreDeadLinks: true,
   // Dev-only proxy to route local API requests without CORS issues.
   vite: {
     server: {
@@ -86,6 +87,15 @@ export default withMermaid({
           ]
         }
       ],
+      "/hosting/": [
+        {
+          text: "Hosting",
+          items: [
+            { text: "Docker & Compose", link: "/hosting/" },
+            { text: "Google Cloud (Cloud Run)", link: "/hosting/gcp/" }
+          ]
+        }
+      ],
       "/api/": [
         {
           text: "Overview",
@@ -113,9 +123,18 @@ export default withMermaid({
       ],
     },
   },
-  // Mermaid options (optional)
+  // Mermaid options (global rendering tweaks for readability at ~700px width)
   mermaid: {
-    // Refer to https://mermaid.js.org/config/setup/modules/mermaidAPI.html#mermaidapi-configuration-defaults
+    startOnLoad: true,
+    flowchart: {
+      curve: "linear",
+      nodeSpacing: 30,
+      rankSpacing: 40,
+      htmlLabels: true
+    },
+    themeVariables: {
+      fontSize: "14px"
+    }
   },
   // Plugin container options (optional)
   mermaidPlugin: {

@@ -5,6 +5,7 @@ import Search from './components/Search.vue';
 import Ask from './components/Ask.vue';
 import mediumZoom, { type Zoom } from "medium-zoom";
 import './styles.css'
+import './custom.css'
 
 export default {
   extends: DefaultTheme,
