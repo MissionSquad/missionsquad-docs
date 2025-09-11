@@ -92,7 +92,8 @@ export default withMermaid({
           text: "Hosting",
           items: [
             { text: "Docker & Compose", link: "/hosting/" },
-            { text: "Google Cloud (Cloud Run)", link: "/hosting/gcp/" }
+            { text: "Google Cloud (Cloud Run)", link: "/hosting/gcp/" },
+            { text: "AWS (ECS Fargate)", link: "/hosting/aws/" }
           ]
         }
       ],
