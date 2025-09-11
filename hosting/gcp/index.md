@@ -26,10 +26,20 @@ Related:
 
 ```mermaid
 flowchart TB
-  Internet((Internet)) --> MSQAPI[msq-api - public ingress] --> ILB[Internal HTTP LB<br/>MCP ILB] --> MCPAPI[mcp-api - internal ingress] --> VPCConn[Serverless VPC Access<br/>Connector]
-  VPCConn --> MongoExt[(MongoDB Atlas)]
-  VPCConn --> SearxExt[(SearXNG - optional)]
-  VPCConn --> SMTP[(SMTP provider)]
+  Internet((Internet)) --> MSQAPI[msq-api public ingress]
+  MSQAPI --> ILB[Internal HTTP LB<br/>MCP ILB]
+  ILB --> MCPAPI[mcp-api internal ingress]
+  MSQAPI --> VPCConn[Serverless VPC Access Connector]
+  MCPAPI --> VPCConn
+  subgraph External Services
+  direction TB
+    MongoExt[(MongoDB Atlas)]
+    SearxExt[(SearXNG optional)]
+    SMTP[(SMTP provider)]
+  end
+  VPCConn --> MongoExt
+  VPCConn --> SearxExt
+  VPCConn --> SMTP
 ```
 
 - Services
@@ -47,7 +57,7 @@ flowchart TB
   - Secret Manager holds: `MONGO_PASS`, `USER_SECRET_KEY`, `JWT_SECRET`, `ADMIN_PASSWORD`, `SMTP_PASS`.
   - Cloud Run service account requires `roles/secretmanager.secretAccessor` on each secret.
 
-Marketplace alignment checklist:
+<!-- Marketplace alignment checklist:
 - Organization:
   - Join and remain in good standing with Google Cloud Partner Advantage and maintain a Cloud Marketplace vendor account and payment profile.
   - Incorporation in supported regions.
@@ -62,7 +72,7 @@ Marketplace alignment checklist:
   - Define SLOs, logging/monitoring with Cloud Logging/Monitoring, on‑call support processes.
   - Configure minimum instances to avoid cold starts; regular security updates to base images; rotate secrets via Secret Manager versions.
 - Change control:
-  - Re‑notify Google if changes affect compliance or previously submitted documentation.
+  - Re‑notify Google if changes affect compliance or previously submitted documentation. -->
 
 ## 2) Prerequisites
 
@@ -148,15 +158,31 @@ for S in MONGO_PASS_PROD SECRETS_KEY_PROD JWT_SECRET_PROD ADMIN_PASSWORD_PROD SM
 done
 ```
 
+```mermaid
+flowchart TB
+  MSQAPI[msq-api] -->|read| Secrets[Secret Manager]
+  MCPAPI[mcp-api] -->|read| Secrets
+  SA[Cloud Run service account] -->|accessor| Secrets
+```
+
 ## 5) Storage buckets and IAM
 
 ```mermaid
 flowchart TB
-  MSQAPI[msq-api] --> GCSData[(GCS bucket - msq-data)]
-  MSQAPI --> GCSLicense[(GCS bucket - msq-license)]
-  MCPAPI[mcp-api] --> GCSPkgs[(GCS bucket - mcp-packages)]
-  MSQAPI --> Secrets[Secret Manager - read]
-  MCPAPI --> Secrets
+  subgraph API Storage
+  direction TB
+    GCSData[(GCS bucket<br/>msq-data)]
+    GCSLicense[(GCS bucket<br/>msq-license)]
+  end
+  subgraph MCP Storage
+  direction TB
+    GCSPkgs[(GCS bucket<br/>mcp-packages)]
+  end
+  MSQAPI[msq-api] -->|mount| GCSData
+  MSQAPI -->|mount| GCSLicense
+  MCPAPI[mcp-api] -->|mount| GCSPkgs
+  MSQAPI -->|read| Secrets[Secret Manager]
+  MCPAPI -->|read| Secrets
 ```
 
 Choose bucket names (unique globally):
@@ -187,9 +213,15 @@ done
 flowchart TB
   MSQAPI[msq-api] --> VPCConn[Serverless VPC Access<br/>Connector]
   MCPAPI[mcp-api] --> VPCConn
-  VPCConn --> MongoExt[(MongoDB Atlas)]
-  VPCConn --> SearxExt[(SearXNG - optional)]
-  VPCConn --> SMTP[(SMTP provider)]
+  subgraph External Services
+  direction TB
+    MongoExt[(MongoDB Atlas)]
+    SearxExt[(SearXNG optional)]
+    SMTP[(SMTP provider)]
+  end
+  VPCConn --> MongoExt
+  VPCConn --> SearxExt
+  VPCConn --> SMTP
 ```
 
 #### ILB Routing (msq-api → MCP)
@@ -249,6 +281,27 @@ export API_PORT="8080"
 export MCP_INSTALL_ON_START="@missionsquad/mcp-github|github"
 # Optional web search tools integration
 export SEARXNG_URL="http://10.122.50.12" # if deployed; otherwise omit or set to internal SearXNG
+```
+
+```mermaid
+flowchart TB
+  ILB[Internal HTTP LB<br/>MCP ILB] --> MCPAPI[mcp-api internal ingress]
+  MCPAPI -->|read| Secrets[Secret Manager]
+  subgraph MCP Storage
+  direction TB
+    GCSPkgs[(GCS bucket<br/>mcp-packages)]
+  end
+  MCPAPI -->|mount| GCSPkgs
+  MCPAPI --> VPCConn[Serverless VPC Access Connector]
+  subgraph External Services
+  direction TB
+    MongoExt[(MongoDB Atlas)]
+    SearxExt[(SearXNG internal)]
+    SMTP[(SMTP provider)]
+  end
+  VPCConn --> MongoExt
+  VPCConn --> SearxExt
+  VPCConn --> SMTP
 ```
 
 Deploy:
@@ -341,6 +394,29 @@ export ALLOWED_ORIGINS="https://your-ui.your-domain.com|https://your-run-url-opt
 # export DEFAULT_EMBEDDING_MODEL="text-embedding-3-small"
 ```
 
+```mermaid
+flowchart TB
+  Internet((Internet)) --> MSQAPI[msq-api public ingress]
+  MSQAPI -->|http to tools| ILB[Internal HTTP LB<br/>MCP ILB]
+  ILB --> MCPAPI[mcp-api<br/>internal ingress]
+  MSQAPI -->|read| Secrets[Secret Manager]
+  subgraph API Storage
+  direction TB
+    GCSData[(GCS bucket<br/>msq-data)]
+    GCSLicense[(GCS bucket<br/>msq-license)]
+  end
+  MSQAPI -->|mount| GCSData
+  MSQAPI -->|mount| GCSLicense
+  MSQAPI --> VPCConn[Serverless VPC Access Connector]
+  subgraph External Services
+  direction TB
+    MongoExt[(MongoDB Atlas)]
+    SMTP[(SMTP provider)]
+  end
+  VPCConn --> MongoExt
+  VPCConn --> SMTP
+```
+
 Deploy:
 ```bash
 gcloud run deploy "${ENVIRONMENT}-msq-api" \
@@ -409,6 +485,12 @@ If you need the web search MCP tools:
 - Deploy SearXNG on GCP and set `SEARXNG_URL` for MCP.
 - Deploy SearXNG on GCE, Cloud Run, or within your VPC, expose it at an internal HTTP address, and set `SEARXNG_URL` to that address (for example, `http://10.122.50.12`).
 - Ensure MCP egress can reach SearXNG over VPC/IP; if internal, provide an internal address.
+
+```mermaid
+flowchart TB
+  MCPAPI[mcp-api] --> VPCConn[Serverless VPC Access Connector]
+  VPCConn --> SearxExt[(SearXNG internal http address)]
+```
 
 ## 13) Troubleshooting
 
