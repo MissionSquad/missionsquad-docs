@@ -74,6 +74,28 @@ flowchart TB
 - Change control:
   - Re‑notify Google if changes affect compliance or previously submitted documentation. -->
 
+## Automated Deployment Option
+
+For a streamlined deployment experience, we provide an automated deployment script that handles all the configuration steps described in this guide:
+
+**GitHub Repository**: [MissionSquad/gcp-deployment](https://github.com/MissionSquad/gcp-deployment)
+
+The `deploy.sh` script automates:
+- API enablement and service configuration
+- Serverless VPC Access Connector setup
+- Secret Manager bindings
+- Cloud Storage bucket creation and IAM configuration
+- Internal HTTP Load Balancer provisioning
+- Cloud Run service deployment with proper networking and volumes
+
+To use the automated script:
+1. Clone the repository and review `gcp-deployment/README.md`
+2. Set your environment variables in the script
+3. Create required secrets in Secret Manager
+4. Run `./gcp-deployment/deploy.sh`
+
+Continue reading below for the detailed manual steps if you prefer granular control or need to customize the deployment beyond what the script provides.
+
 ## 2) Prerequisites
 
 - gcloud CLI installed and authenticated.
@@ -510,7 +532,9 @@ flowchart TB
 
 ## 14) Cleanup
 
-Cleanup steps (run as needed):
+If you used the automated deployment script, refer to the [gcp-deployment repository](https://github.com/MissionSquad/gcp-deployment) for cleanup instructions.
+
+For manual cleanup, run these steps as needed:
 - Delete forwarding rule → target proxy → URL map → backend service → NEG.
 - Remove subnets if no longer needed.
 - Delete buckets (with care) and secrets when appropriate.
