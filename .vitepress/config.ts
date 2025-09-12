@@ -126,7 +126,7 @@ export default withMermaid({
   },
   // Mermaid options (global rendering tweaks for readability at ~700px width)
   mermaid: {
-    startOnLoad: true,
+    startOnLoad: false, // Changed to false to control initialization manually
     flowchart: {
       curve: "linear",
       nodeSpacing: 30,
