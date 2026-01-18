@@ -144,5 +144,6 @@ Vector Stores & Files:
 - [Collections](/api/reference/collections)
 - [Vector Stores](/api/reference/vector-stores)
 - [Files](/api/reference/files)
+- [Webhooks](/api/reference/webhooks)
 - [Convenience](/api/reference/convenience)
 - [Endpoint Index](/api/reference/endpoint-index)
