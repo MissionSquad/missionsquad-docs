@@ -6,6 +6,10 @@ export default withMermaid({
   srcDir: ".",
   cleanUrls: true,
   ignoreDeadLinks: true,
+  lastUpdated: true,
+  sitemap: {
+    hostname: "https://docs.missionsquad.ai",
+  },
   // Dev-only proxy to route local API requests without CORS issues.
   vite: {
     server: {
@@ -83,9 +87,10 @@ export default withMermaid({
             { text: "Schedules", link: "/platform/schedules" },
             { text: "Recipes", link: "/platform/recipes" },
             { text: "Security & Isolation", link: "/platform/security" },
-            { text: "Troubleshooting", link: "/platform/troubleshooting" }
-          ]
-        }
+            { text: "Webhooks", link: "/platform/webhooks" },
+            { text: "Troubleshooting", link: "/platform/troubleshooting" },
+          ],
+        },
       ],
       "/hosting/": [
         {
@@ -93,9 +98,9 @@ export default withMermaid({
           items: [
             { text: "Docker & Compose", link: "/hosting/" },
             { text: "Google Cloud (Cloud Run)", link: "/hosting/gcp/" },
-            { text: "AWS (ECS Fargate)", link: "/hosting/aws/" }
-          ]
-        }
+            { text: "AWS (ECS Fargate)", link: "/hosting/aws/" },
+          ],
+        },
       ],
       "/api/": [
         {
@@ -131,14 +136,14 @@ export default withMermaid({
       curve: "linear",
       nodeSpacing: 30,
       rankSpacing: 40,
-      htmlLabels: true
+      htmlLabels: true,
     },
     themeVariables: {
-      fontSize: "14px"
-    }
+      fontSize: "14px",
+    },
   },
   // Plugin container options (optional)
   mermaidPlugin: {
-    class: "mermaid"
-  }
+    class: "mermaid",
+  },
 });
