@@ -460,6 +460,8 @@ export DEBUG="false"
 export SCRAPE_WITH_GPU="false"
 export PAGE_CACHE_MAX="1000"
 export TOOL_SECRETS="github|github_pat"
+export REDIS_HOST="redis://your-redis-endpoint:6379"
+export REDIS_USER=""
 
 # TOOLS_HOST uses internal LB DNS (HTTP)
 export TOOLS_HOST="http://${ALB_MCP_DNS}"
@@ -563,6 +565,8 @@ Create `api-taskdef.json`:
         { "name":"SECRETS_DBNAME","value":"REPLACE_SECRETS_DBNAME" },
         { "name":"TOOLS_HOST","value":"REPLACE_TOOLS_HOST" },
         { "name":"TOOL_SECRETS","value":"github|github_pat" },
+        { "name":"REDIS_HOST","value":"REPLACE_REDIS_HOST" },
+        { "name":"REDIS_USER","value":"REPLACE_REDIS_USER" },
         { "name":"SMTP_HOST","value":"smtp.gmail.com" },
         { "name":"SMTP_PORT","value":"465" },
         { "name":"SMTP_USER","value":"REPLACE_SMTP_USER" },
@@ -623,6 +627,10 @@ Create `api-taskdef.json`:
   ]
 }
 ```
+
+Redis HA note:
+- Set `REDIS_HOST`/`REDIS_USER` for API distributed cache state sync and core invalidation across instances.
+- If your Redis requires a password, add `REDIS_PASS` to the task definition `secrets` array (recommended via Secrets Manager).
 
 Register task definitions:
 ```bash

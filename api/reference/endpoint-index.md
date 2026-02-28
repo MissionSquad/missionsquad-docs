@@ -40,6 +40,12 @@ A consolidated list of user-facing endpoints from the MissionSquad API User Guid
 - GET `/v1/core/tools` — see [Core Utilities](/api/reference/core-utilities)
 - GET `/v1/core/servers` — see [Core Utilities](/api/reference/core-utilities)
 
+### Audio and Voice
+
+- POST `/v1/core/audio/tts` — see [Audio (TTS/STT)](/api/reference/audio)
+- POST `/v1/core/audio/tts/stream` — see [Audio (TTS/STT)](/api/reference/audio)
+- POST `/v1/core/audio/stt` — see [Audio (TTS/STT)](/api/reference/audio)
+
 ### Local Collections (MissionSquad Core)
 
 - GET `/v1/core/collections` — see [Collections](/api/reference/collections)
@@ -77,6 +83,7 @@ A consolidated list of user-facing endpoints from the MissionSquad API User Guid
 
 - [API Overview](/api/)
 - [Chat Completions](/api/reference/chat-completions)
+- [Audio (TTS/STT)](/api/reference/audio)
 - [Embeddings](/api/reference/embeddings)
 - [Providers](/api/reference/providers)
 - [Models](/api/reference/models)

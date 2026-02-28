@@ -176,6 +176,71 @@ Response:
 
 ---
 
+### POST `/v1/core/audio/stt` — Speech-to-Text (multipart/form-data)
+
+For complete audio endpoint documentation (TTS + streaming + STT + provider support), see [Audio (TTS/STT)](/api/reference/audio).
+
+Transcribe uploaded audio using a configured audio-capable provider.
+
+Required form fields:
+
+- `file` (multipart file)
+- `providerKey` (string)
+
+Optional form fields:
+
+- `model`, `language`, `prompt`
+- `responseFormat` or `response_format` (`json` | `text` | `srt` | `verbose_json` | `vtt`)
+- `timestampGranularities`:
+  - `word`
+  - `segment`
+  - array of those values
+  - JSON array string (for multipart clients)
+  - comma-separated string
+- `diarize`, `tagAudioEvents` as boolean or `"true"` / `"false"`
+- `extraParams` or `extra_params` as object or JSON-object string
+- `apiKey`, `url` for temporary `elevenlabs` usage when that provider is not saved in account config
+
+Validation behavior:
+
+- `400` on invalid boolean fields, invalid JSON object payloads, or invalid `timestampGranularities`
+- `400` if audio MIME type is not one of:
+  - `audio/mpeg`
+  - `audio/wav`
+  - `audio/ogg`
+  - `audio/webm`
+- `400` for missing/invalid `providerKey` or file upload
+- `400` when provider is not configured (except temporary ElevenLabs flow)
+- `500` if transcription fails upstream
+
+Example:
+
+```bash
+curl -X POST "https://agents.missionsquad.ai/v1/core/audio/stt" \
+  -H "x-api-key: $MSQ_API_KEY" \
+  -F "providerKey=openai" \
+  -F "file=@./sample.wav;type=audio/wav" \
+  -F "response_format=verbose_json" \
+  -F "timestampGranularities=[\"word\",\"segment\"]" \
+  -F "diarize=false" \
+  -F "extra_params={\"temperature\":0}"
+```
+
+Example response (shape varies by provider/format):
+
+```json
+{
+  "text": "Hello world.",
+  "model": "provider-model-id",
+  "language": "en",
+  "duration": 1.2,
+  "segments": [],
+  "words": []
+}
+```
+
+---
+
 ### POST `/v1/core/agent-workflow`
 
 Execute a workflow by agent name.
@@ -232,4 +297,6 @@ Response (example where workflow returns a chat completion):
 
 - [Agents](/api/reference/agents)
 - [Models](/api/reference/models)
+- [Audio (TTS/STT)](/api/reference/audio)
+- [Endpoint Index](/api/reference/endpoint-index)
 - [API Overview](/api/)
