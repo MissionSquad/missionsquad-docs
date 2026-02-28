@@ -18,6 +18,8 @@ Body (essential fields):
 Optional OpenAI-style parameters:
 
 - `temperature`, `max_tokens`, `top_p`, `n`, `stop`, `tools`, `tool_choice`, `stream`.
+- `response_format` or `responseFormat` for structured output hints.
+- `extra_params` or `extraParams` for provider-specific passthrough options.
 
 Notes:
 
@@ -26,6 +28,27 @@ Notes:
   - `type: "function"`
   - `function: { name: string; description?: string; parameters: JSONSchema }`
 - Streaming: Set `stream: true` for Server-Sent Events (SSE). The API sends OpenAI-like delta chunks (`text/event-stream`).
+
+### Structured output and provider params
+
+`POST /v1/chat/completions` accepts both snake_case and camelCase for structured output and passthrough params:
+
+- `response_format` or `responseFormat`
+- `extra_params` or `extraParams`
+
+Supported `response_format` shapes:
+
+- Text mode:
+  - `{ "type": "text" }`
+- JSON object mode:
+  - `{ "type": "json_object", "schema": { ...optional JSON schema object... } }`
+- JSON schema mode:
+  - `{ "type": "json_schema", "json_schema": { "schema": { ...required schema object... } } }`
+
+Notes:
+
+- If `response_format` is not in a valid shape, it is ignored and the request continues without structured output hints.
+- Actual schema enforcement is provider/model-specific.
 
 ## Examples
 
@@ -107,6 +130,43 @@ const completion = await client.chat.completions.create({
   // tools: [{ type: "function", function: { name, description, parameters: { type: "object", properties: {}, required: [] } } }]
 });
 console.log(completion.choices[0].message);
+```
+
+### JavaScript (fetch, structured output)
+
+```ts
+const res = await fetch("https://agents.missionsquad.ai/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "x-api-key": process.env.MSQ_API_KEY!,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    model: "my-gpt4",
+    messages: [{ role: "user", content: "Return title and summary for this article." }],
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        schema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            summary: { type: "string" }
+          },
+          required: ["title", "summary"],
+          additionalProperties: false
+        }
+      }
+    },
+    extra_params: {
+      // provider-specific passthrough values
+      seed: 12345
+    }
+  })
+});
+
+const data = await res.json();
+console.log(data.choices?.[0]?.message?.content);
 ```
 
 ## Optional Headers

@@ -66,6 +66,11 @@ console.log(completion.choices[0].message);
 - POST `/v1/chat/completions`
 - POST `/v1/embeddings`
 
+Core audio endpoints:
+- POST `/v1/core/audio/tts`
+- POST `/v1/core/audio/tts/stream`
+- POST `/v1/core/audio/stt`
+
 Works with:
 - Official OpenAI SDK (JavaScript/TypeScript)
 - Any OpenAI-like API client (set `baseURL` to your MissionSquad API and supply your key)
@@ -87,6 +92,8 @@ Provider API keys and credentials are masked in all read APIs.
 - Prefer `x-api-key` for direct API usage.
 - For OpenAI SDK usage, provide your MissionSquad API key as `apiKey` with `baseURL` set to your API origin (Authorization: Bearer msq-... supported).
 - Streaming chat uses SSE with OpenAI-like chunk payloads (`text/event-stream`). In Node 20+, use `ReadableStreamDefaultReader` via `res.body.getReader()`. In browsers, consider `EventSource` or streaming-compatible readers.
+- Chat completions support structured output hints via `response_format`/`responseFormat` and provider passthrough values via `extra_params`/`extraParams`.
+- Audio endpoints support TTS (binary and SSE streaming) plus STT multipart uploads.
 - Unsupported embeddings: `text-embedding-3-large` is not supported. Use `text-embedding-3-small` or `nomic-embed-text-v1.5`. Requests with unsupported models will return 400 with a message.
 
 ## Endpoint Index
@@ -96,6 +103,9 @@ Core (excluding published/public chat):
 - GET `/v1/modelmap`
 - POST `/v1/chat/completions`
 - POST `/v1/embeddings`
+- POST `/v1/core/audio/tts`
+- POST `/v1/core/audio/tts/stream`
+- POST `/v1/core/audio/stt`
 - GET `/v1/core/providers`
 - POST `/v1/core/add/provider`
 - POST `/v1/core/delete/provider`
@@ -136,6 +146,7 @@ Vector Stores & Files:
 ## See also
 
 - [Chat Completions](/api/reference/chat-completions)
+- [Audio (TTS/STT)](/api/reference/audio)
 - [Embeddings](/api/reference/embeddings)
 - [Providers](/api/reference/providers)
 - [Models](/api/reference/models)

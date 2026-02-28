@@ -404,6 +404,8 @@ export ENABLE_NGINX="false" # not used on Cloud Run
 # MCP and SMTP
 export TOOLS_HOST="http://${ILB_IP_ADDRESS}"
 export TOOL_SECRETS="github|github_pat"
+export REDIS_HOST="redis://your-redis-endpoint:6379"
+export REDIS_USER=""
 export SMTP_HOST="smtp.gmail.com"
 export SMTP_PORT="465"
 export SMTP_USER="noreply@your-domain.com"
@@ -449,7 +451,7 @@ gcloud run deploy "${ENVIRONMENT}-msq-api" \
   --execution-environment=gen2 \
   --vpc-connector="$VPC_CONNECTOR_NAME" --vpc-egress=private-ranges-only \
   --ingress=all \
-  --set-env-vars="ADMIN_USERNAME=${ADMIN_USERNAME},ADMIN_EMAIL=${ADMIN_EMAIL},MONGO_USER=${MONGO_USER},REPLICA_SET=${REPLICA_SET},MONGO_HOST=${MONGO_HOST},MONGO_DBNAME=${MONGO_DBNAME},ENABLE_NGINX=${ENABLE_NGINX},DEBUG=${DEBUG},SCRAPE_WITH_GPU=${SCRAPE_WITH_GPU},PAGE_CACHE_MAX=${PAGE_CACHE_MAX},TOOLS_HOST=${TOOLS_HOST},TOOL_SECRETS=${TOOL_SECRETS},SMTP_HOST=${SMTP_HOST},SMTP_PORT=${SMTP_PORT},SMTP_USER=${SMTP_USER},SMTP_SECURE=${SMTP_SECURE},ALLOWED_ORIGINS=${ALLOWED_ORIGINS}" \
+  --set-env-vars="ADMIN_USERNAME=${ADMIN_USERNAME},ADMIN_EMAIL=${ADMIN_EMAIL},MONGO_USER=${MONGO_USER},REPLICA_SET=${REPLICA_SET},MONGO_HOST=${MONGO_HOST},MONGO_DBNAME=${MONGO_DBNAME},ENABLE_NGINX=${ENABLE_NGINX},DEBUG=${DEBUG},SCRAPE_WITH_GPU=${SCRAPE_WITH_GPU},PAGE_CACHE_MAX=${PAGE_CACHE_MAX},TOOLS_HOST=${TOOLS_HOST},TOOL_SECRETS=${TOOL_SECRETS},REDIS_HOST=${REDIS_HOST},REDIS_USER=${REDIS_USER},SMTP_HOST=${SMTP_HOST},SMTP_PORT=${SMTP_PORT},SMTP_USER=${SMTP_USER},SMTP_SECURE=${SMTP_SECURE},ALLOWED_ORIGINS=${ALLOWED_ORIGINS}" \
   --update-secrets="MONGO_PASS=MONGO_PASS_PROD:latest,USER_SECRET_KEY=SECRETS_KEY_PROD:latest,JWT_SECRET=JWT_SECRET_PROD:latest,ADMIN_PASSWORD=ADMIN_PASSWORD_PROD:latest,SMTP_PASS=SMTP_PASS_PROD:latest" \
   --add-volume=name=msq-data,type=cloud-storage,bucket="${MSQ_DATA_BUCKET_NAME}" \
   --add-volume=name=msq-license,type=cloud-storage,bucket="${MSQ_LICENSE_BUCKET_NAME}" \
@@ -459,6 +461,10 @@ gcloud run deploy "${ENVIRONMENT}-msq-api" \
   --liveness-probe="httpGet.path=/healthz,initialDelaySeconds=30,periodSeconds=120,timeoutSeconds=5,failureThreshold=3" \
   --project="$GCP_PROJECT"
 ```
+
+Redis HA note:
+- Set `REDIS_HOST`/`REDIS_USER` for API distributed cache state sync and core invalidation across instances.
+- If your Redis requires a password, store it in Secret Manager and append `REDIS_PASS=REDIS_PASS_PROD:latest` to `--update-secrets`.
 
 Obtain URLs:
 ```bash

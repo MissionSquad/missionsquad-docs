@@ -10,11 +10,13 @@ What you will deploy:
 - api: Mission Squad API (OpenAI-compatible for chat completions, vector stores, files, core endpoints)
 - mcp: Mission Squad MCP gateway (tools server hub)
 - Optional: searxng + redis (for web search tools via MCP)
+- Optional: shared Redis/Valkey for API distributed cache HA mode
 
 What you bring:
 - A reachable MongoDB (Atlas or self-hosted) with auth enabled
 - A domain and TLS termination (Nginx, Cloudflare, or equivalent)
 - Outbound e-mail SMTP credentials (optional but recommended for schedules/notifications)
+- For multi-instance API deployments: a shared Redis/Valkey endpoint
 
 Related docs:
 - Platform UI: [Getting Started](/platform/getting-started)
@@ -73,6 +75,9 @@ REPLICA_SET=mongodb-replica-set-name #only if using a replica set
 MONGO_DBNAME=missionsquad
 SECRETS_DBNAME=userSecrets
 SMTP_PASS=google-app-password-or-smtp-password
+REDIS_HOST=redis://redis:6379
+REDIS_USER=
+REDIS_PASS=
 IMAGE_PROCESSOR_API_KEY=api-key-for-image-processor-host
 ```
 
@@ -96,6 +101,7 @@ Recommendations:
   - JWT_SECRET: `openssl rand -hex 32`
   - USER_SECRET_KEY and SECRETS_KEY: `openssl rand -hex 32`
 - If using Atlas SRV URLs (mongodb+srv://), set MONGO_HOST to the SRV URL and omit REPLICA_SET.
+- For multi-instance API HA mode, point `REDIS_HOST` to a shared Redis/Valkey endpoint (single-node or managed HA).
 - Ensure the application user has permissions to create collections in MONGO_DBNAME and SECRETS_DBNAME.
 
 ## 4) Compose file (authoritative baseline)
@@ -205,7 +211,10 @@ services:
 ```
 
 Notes:
-- searxng and redis are optional; include them only if you plan to use web search tools via MCP.
+- searxng is optional; include it only if you plan to use web search tools via MCP.
+- redis can be used for two independent purposes:
+  - SearXNG backend cache (optional web search tooling)
+  - MissionSquad API distributed cache + invalidation (recommended for multi-instance HA)
 - The API can be reached on the host at http://localhost:8080 unless you place it behind a reverse proxy (recommended).
 - ALLOWED_ORIGINS must include your UI origin(s) to avoid CORS failures in browsers.
 
@@ -277,6 +286,7 @@ API (service: api):
 - SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS / SMTP_SECURE: Outbound e-mail
 - TOOLS_HOST: URL for MCP gateway (default http://mcp:8082)
 - TOOL_SECRETS: Tool secret mapping, e.g., github|github_pat
+- REDIS_HOST / REDIS_USER / REDIS_PASS: Shared Redis used by API cache state sync and cross-instance core invalidation
 - IMAGE_PROCESSOR_HOST / IMAGE_PROCESSOR_MODEL / IMAGE_PROCESSOR_API_KEY: OCR/image processing passthrough
 - DEBUG, SCRAPE_WITH_GPU, PAGE_CACHE_MAX: operational flags
 
@@ -328,6 +338,7 @@ docker compose logs --since=1h mcp
 
 Scaling:
 - The API is stateless (except local cache/data directory) and can be scaled horizontally behind a load balancer, provided all instances point at the same MongoDB and share required external services.
+- For horizontally scaled API nodes, configure the same `REDIS_HOST`/`REDIS_USER`/`REDIS_PASS` on every instance to enable shared SuperLRU state and core invalidation pub/sub.
 - MCP can be replicated; ensure consistent access to packages if using a shared volume or pre-baked images.
 
 ## 9) Optional: SearXNG + Redis
@@ -335,6 +346,7 @@ Scaling:
 - Enable SearXNG for web search tooling via MCP by including the searxng and redis services.
 - In .mcp.env, set `SEARXNG_URL=http://searxng` so the MCP gateway can reach it over the Docker network.
 - For Redis, either configure SearXNG via `SEARXNG_REDIS_URL=redis://redis:6379/0` or in searxng.yaml within ./searxng.
+- The same Redis service can also back API HA mode; if you use this pattern, set `REDIS_HOST` in `.api.env` to that Redis endpoint.
 
 ## 10) Verify and first use
 
