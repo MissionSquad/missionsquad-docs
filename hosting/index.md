@@ -8,7 +8,7 @@ Audience: Operators deploying the Mission Squad Platform in their own environmen
 
 What you will deploy:
 - api: Mission Squad API (OpenAI-compatible for chat completions, vector stores, files, core endpoints)
-- mcp: Mission Squad MCP gateway (tools server hub)
+- mcp: Mission Squad [MCP API](/api/mcp-api/) — admin-only sidecar that manages MCP server lifecycle, package installation, encrypted secrets, and tool execution. Not publicly exposed; the API communicates with it internally via `TOOLS_HOST`
 - Optional: searxng + redis (for web search tools via MCP)
 - Optional: shared Redis/Valkey for API distributed cache HA mode
 
@@ -290,7 +290,7 @@ API (service: api):
 - IMAGE_PROCESSOR_HOST / IMAGE_PROCESSOR_MODEL / IMAGE_PROCESSOR_API_KEY: OCR/image processing passthrough
 - DEBUG, SCRAPE_WITH_GPU, PAGE_CACHE_MAX: operational flags
 
-MCP (service: mcp):
+MCP API (service: mcp) — admin-only sidecar, see [MCP API docs](/api/mcp-api/) for full reference:
 - PORT: MCP listen port (default 8082)
 - MONGO_* / REPLICA_SET / SECRETS_DBNAME / SECRETS_KEY: Storage and encryption for MCP-managed secrets
 - INSTALL_ON_START: Comma-delimited packages to install on boot, format NAME|alias (e.g., @missionsquad/mcp-github|github)

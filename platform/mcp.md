@@ -26,9 +26,13 @@ Purpose: Connect tool servers that expose functions your agents can call.
 
 ## API parity
 
-- Servers inventory: `GET /v1/core/servers`  
-- Tools inventory: `GET /v1/core/tools`  
+- Servers inventory: `GET /v1/core/servers`
+- Tools inventory: `GET /v1/core/tools`
 See [Core Utilities](/api/reference/core-utilities)
+
+## Operator / Admin API
+
+For instance operators who manage MCP servers, packages, and secrets programmatically, see the [MCP API documentation](/api/mcp-api/). The MCP API is a separate admin-only sidecar service that provides endpoints for package installation, server lifecycle management, encrypted secret storage, and OAuth configuration.
 
 <!-- ## Screenshot placeholder
 

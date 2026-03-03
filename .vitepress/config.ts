@@ -128,6 +128,15 @@ export default withMermaid({
             { text: "Endpoint Index", link: "/api/reference/endpoint-index" },
           ],
         },
+        {
+          text: "MCP API (Admin)",
+          items: [
+            { text: "Overview", link: "/api/mcp-api/" },
+            { text: "Packages", link: "/api/mcp-api/packages" },
+            { text: "Servers & Tools", link: "/api/mcp-api/servers" },
+            { text: "Secrets", link: "/api/mcp-api/secrets" },
+          ],
+        },
       ],
     },
   },

@@ -79,6 +79,45 @@ A consolidated list of user-facing endpoints from the MissionSquad API User Guid
 - GET `/v1/user-collections` — see [Convenience](/api/reference/convenience)
 - GET `/v1/vector_stores/:id/file-details` — see [Convenience](/api/reference/convenience)
 
+## MCP API (Admin)
+
+The [MCP API](/api/mcp-api/) is a separate, admin-only sidecar service. These endpoints are served by the MCP API, not the MissionSquad API.
+
+### Packages
+
+- POST `/packages/install` — see [Packages](/api/mcp-api/packages)
+- GET `/packages` — see [Packages](/api/mcp-api/packages)
+- GET `/packages/by-name/:name` — see [Packages](/api/mcp-api/packages)
+- GET `/packages/by-id/:name` — see [Packages](/api/mcp-api/packages)
+- DELETE `/packages/:name` — see [Packages](/api/mcp-api/packages)
+- PUT `/packages/:name/enable` — see [Packages](/api/mcp-api/packages)
+- PUT `/packages/:name/disable` — see [Packages](/api/mcp-api/packages)
+- GET `/packages/updates` — see [Packages](/api/mcp-api/packages)
+- PUT `/packages/:name/upgrade` — see [Packages](/api/mcp-api/packages)
+- PUT `/packages/upgrade-all` — see [Packages](/api/mcp-api/packages)
+
+### Servers & Tools
+
+- GET `/mcp/tools` — see [Servers & Tools](/api/mcp-api/servers)
+- POST `/mcp/tool/call` — see [Servers & Tools](/api/mcp-api/servers)
+- GET `/mcp/servers` — see [Servers & Tools](/api/mcp-api/servers)
+- GET `/mcp/servers/:name` — see [Servers & Tools](/api/mcp-api/servers)
+- POST `/mcp/servers` — see [Servers & Tools](/api/mcp-api/servers)
+- PUT `/mcp/servers/:name` — see [Servers & Tools](/api/mcp-api/servers)
+- POST `/mcp/servers/:name/oauth` — see [Servers & Tools](/api/mcp-api/servers)
+- DELETE `/mcp/servers/:name` — see [Servers & Tools](/api/mcp-api/servers)
+- PUT `/mcp/servers/:name/enable` — see [Servers & Tools](/api/mcp-api/servers)
+- PUT `/mcp/servers/:name/disable` — see [Servers & Tools](/api/mcp-api/servers)
+
+### Secrets
+
+- POST `/secrets/set` — see [Secrets](/api/mcp-api/secrets)
+- POST `/secrets/delete` — see [Secrets](/api/mcp-api/secrets)
+
+### Health
+
+- GET `/healthz` — see [MCP API Overview](/api/mcp-api/)
+
 ## See also
 
 - [API Overview](/api/)
@@ -93,3 +132,4 @@ A consolidated list of user-facing endpoints from the MissionSquad API User Guid
 - [Vector Stores](/api/reference/vector-stores)
 - [Files](/api/reference/files)
 - [Convenience](/api/reference/convenience)
+- [MCP API (Admin)](/api/mcp-api/)
