@@ -31,6 +31,15 @@ Quick links:
 - Use the official OpenAI SDK by setting `baseURL` to your Mission Squad API and passing your Mission Squad API key as `apiKey` (Authorization: `Bearer msq-...` accepted). See [API](/api/) and [chat completions](/api/reference/chat-completions) for examples.
 - For embeddings, use a supported embedding model such as `text-embedding-3-small` or `nomic-embed-text-v1.5`. `text-embedding-3-large` is not supported and requests will return HTTP 400.
 
+## MCP API (Admin)
+
+The [MCP API](/api/mcp-api/) is an admin-only companion service deployed as a sidecar alongside the MissionSquad API. It manages MCP server lifecycle, package installation, encrypted secret storage, and tool execution. Instance operators use it to install/upgrade MCP packages, register servers, and manage per-user tool credentials.
+
+- [MCP API Overview](/api/mcp-api/)
+- [Packages](/api/mcp-api/packages) — install, upgrade, enable/disable MCP server packages
+- [Servers & Tools](/api/mcp-api/servers) — manage servers, list and call tools, OAuth flows
+- [Secrets](/api/mcp-api/secrets) — encrypted secret management and security model
+
 ## Where to start
 
 - New to the UI? Begin with: [Getting Started](/platform/getting-started)

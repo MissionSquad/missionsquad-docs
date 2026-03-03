@@ -143,6 +143,19 @@ Vector Stores & Files:
 - GET `/v1/user-collections`
 - GET `/v1/vector_stores/:id/file-details`
 
+## MCP API (Admin)
+
+The MCP API is a separate, admin-only companion service deployed as a sidecar container alongside the MissionSquad API. It is not publicly exposed and is intended for instance operators.
+
+The MissionSquad API communicates with the MCP API internally via the `TOOLS_HOST` environment variable. The MCP API manages:
+
+- MCP server package installation and lifecycle (Node.js, Python, Streamable HTTP)
+- Server registration, configuration, enable/disable
+- Encrypted per-user secret storage and automatic injection into tool calls
+- OAuth authentication flows for tool servers
+
+See the full [MCP API documentation](/api/mcp-api/) for endpoint reference and deployment details.
+
 ## See also
 
 - [Chat Completions](/api/reference/chat-completions)
@@ -158,3 +171,4 @@ Vector Stores & Files:
 - [Webhooks](/api/reference/webhooks)
 - [Convenience](/api/reference/convenience)
 - [Endpoint Index](/api/reference/endpoint-index)
+- [MCP API (Admin)](/api/mcp-api/)
