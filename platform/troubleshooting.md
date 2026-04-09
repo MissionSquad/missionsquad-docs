@@ -146,7 +146,7 @@ Checks:
 - Confirm the workspace/account namespace context.
 
 API touchpoints:
-- `GET /v1/models` (returns models and agents) — see [Models](/api/reference/models)
+- `GET /v1/models` (returns models plus chat-eligible agents) — see [Models](/api/reference/models)
 - `GET /v1/core/agents` — see [Agents](/api/reference/agents)
 
 ---

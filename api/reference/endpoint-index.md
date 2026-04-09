@@ -30,6 +30,20 @@ A consolidated list of user-facing endpoints from the MissionSquad API User Guid
 - GET `/v1/core/agents` — see [Agents](/api/reference/agents)
 - POST `/v1/core/add/agent` — see [Agents](/api/reference/agents)
 - POST `/v1/core/delete/agent` — see [Agents](/api/reference/agents)
+- POST `/v1/core/agents/publish` — see [Agents](/api/reference/agents)
+- GET `/v1/core/agents/published` — see [Agents](/api/reference/agents)
+- GET `/v1/core/agents/shared-with-me` — see [Agents](/api/reference/agents)
+- POST `/v1/core/agents/:username/:slug/shares` — see [Agents](/api/reference/agents)
+- GET `/v1/core/agents/:username/:slug/shares` — see [Agents](/api/reference/agents)
+- DELETE `/v1/core/agents/:username/:slug/shares` — see [Agents](/api/reference/agents)
+- GET `/v1/public/agent/:username/:slug` — see [Agents](/api/reference/agents)
+- POST `/v1/public/agent/:username/:slug/chat` — see [Agents](/api/reference/agents)
+- POST `/v1/public/agent/:username/:slug/speak` — see [Agents](/api/reference/agents)
+- GET `/v1/public/agent/:username/:slug/sessions` — see [Agents](/api/reference/agents)
+- GET `/v1/public/agent/:username/:slug/sessions/:id` — see [Agents](/api/reference/agents)
+- POST `/v1/public/agent/:username/:slug/sessions` — see [Agents](/api/reference/agents)
+- PATCH `/v1/public/agent/:username/:slug/sessions/:id/title` — see [Agents](/api/reference/agents)
+- DELETE `/v1/public/agent/:username/:slug/sessions/:id` — see [Agents](/api/reference/agents)
 
 ### Core Utilities
 

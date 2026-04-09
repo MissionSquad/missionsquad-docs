@@ -25,7 +25,7 @@ Purpose: Iterate quickly on prompts and verify tool/RAG behavior before publishi
 
 ## API parity
 
-- Chat run: `POST /v1/chat/completions` (OpenAI‑compatible; `model` may be an agent name)  
+- Chat run: `POST /v1/chat/completions` (OpenAI‑compatible; `model` may be a model name, a published agent name, or `shared/<ownerUsername>/<slug>`)  
 - Workflows test: `POST /v1/core/agent-workflow`  
 - Streaming uses OpenAI‑style SSE chunks  
 See [Chat Completions](/api/reference/chat-completions) and [Core Utilities](/api/reference/core-utilities)

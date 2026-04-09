@@ -38,7 +38,7 @@ API parity (developer reference):
 - Models: `POST /v1/core/models`, `POST /v1/core/add/model`, `POST /v1/core/delete/model`, `GET /v1/models` — see [Models](/api/reference/models)
 - Agents: `GET /v1/core/agents`, `POST /v1/core/add/agent`, `POST /v1/core/delete/agent` — see [Agents](/api/reference/agents)
 - Tools/Servers inventory: `GET /v1/core/tools`, `GET /v1/core/servers` — see [Core Utilities](/api/reference/core-utilities)
-- Chat runs: `POST /v1/chat/completions` (OpenAI‑compatible; `model` can be an agent name) — see [Chat Completions](/api/reference/chat-completions)
+- Chat runs: `POST /v1/chat/completions` (OpenAI‑compatible; `model` can be a model name, one of your published agent names, or `shared/<ownerUsername>/<slug>`) — see [Chat Completions](/api/reference/chat-completions)
 - Embeddings & files: `/v1/files`, `/v1/vector_stores` — see [Files](/api/reference/files) and [Vector Stores](/api/reference/vector-stores)
 - Workflows: `POST /v1/core/agent-workflow` — see [Core Utilities](/api/reference/core-utilities)
 
