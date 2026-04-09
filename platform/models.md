@@ -25,7 +25,7 @@ Purpose: Select and configure the models you want to use with your preferred par
 - Discover vendor models: `POST /v1/core/models`  
 - Add/save: `POST /v1/core/add/model`  
 - Delete: `POST /v1/core/delete/model`  
-- List (merged with agents): `GET /v1/models`  
+- List (all regular models plus chat-eligible agents): `GET /v1/models`  
 See [Models](/api/reference/models)
 
 ## Gotchas

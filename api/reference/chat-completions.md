@@ -6,13 +6,17 @@ title: Chat Completions (POST /v1/chat/completions)
 
 POST `/v1/chat/completions`
 
-OpenAI-compatible chat completions. Target either a model you added or an agent by name within your account namespace.
+OpenAI-compatible chat completions. Target either:
+
+- a model you added
+- one of your own published agents by agent name
+- a shared published agent by canonical id `shared/<ownerUsername>/<slug>`
 
 ## Request
 
 Body (essential fields):
 
-- `model` (string) — Your model name or agent name (within your account).
+- `model` (string) — Your model name, your own published agent name, or a shared published agent id such as `shared/john_doe/customer-support-bot`.
 - `messages` (array) — Items of `{ role: "system" | "user" | "assistant" | "tool", content: string }`.
 
 Optional OpenAI-style parameters:
@@ -23,7 +27,10 @@ Optional OpenAI-style parameters:
 
 Notes:
 
-- `model` may be a user model or user agent name.
+- `model` may be:
+  - a user model name
+  - an owned published agent name
+  - a shared published agent id in the form `shared/<ownerUsername>/<slug>`
 - Tool usage: Provide `tools` in the OpenAI function/tool format:
   - `type: "function"`
   - `function: { name: string; description?: string; parameters: JSONSchema }`

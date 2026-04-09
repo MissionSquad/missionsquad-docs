@@ -45,7 +45,7 @@ const client = new OpenAI({
 });
 
 const completion = await client.chat.completions.create({
-  model: "my-gpt4", // model or agent name in your account namespace
+  model: "my-gpt4", // model, your own published agent name, or shared/<ownerUsername>/<slug>
   messages: [
     { role: "system", content: "You are helpful." },
     { role: "user", content: "Hello!" }
@@ -59,7 +59,7 @@ console.log(completion.choices[0].message);
 
 - All user-defined entities are scoped to your account: models, agents, embedding models, vector stores, files.
 - List/CRUD operations only access resources associated with your API key.
-- Chat and embeddings resolve model/agent names within your namespace.
+- Chat resolves your own models and published agents in your namespace, and can also target explicitly shared published agents via `shared/<ownerUsername>/<slug>`.
 
 ## OpenAI-Compatible Endpoints
 
@@ -98,7 +98,7 @@ Provider API keys and credentials are masked in all read APIs.
 
 ## Endpoint Index
 
-Core (excluding published/public chat):
+Core:
 - GET `/v1/models`
 - GET `/v1/modelmap`
 - POST `/v1/chat/completions`
@@ -115,6 +115,12 @@ Core (excluding published/public chat):
 - GET `/v1/core/agents`
 - POST `/v1/core/add/agent`
 - POST `/v1/core/delete/agent`
+- POST `/v1/core/agents/publish`
+- GET `/v1/core/agents/published`
+- GET `/v1/core/agents/shared-with-me`
+- POST `/v1/core/agents/:username/:slug/shares`
+- GET `/v1/core/agents/:username/:slug/shares`
+- DELETE `/v1/core/agents/:username/:slug/shares`
 - POST `/v1/core/generate/prompt`
 - POST `/v1/core/agent-workflow`
 - GET `/v1/core/config`
@@ -142,6 +148,21 @@ Vector Stores & Files:
 - GET `/v1/files/:id/content`
 - GET `/v1/user-collections`
 - GET `/v1/vector_stores/:id/file-details`
+
+Published/shared agent access:
+- GET `/v1/public/agent/:username/:slug`
+- POST `/v1/public/agent/:username/:slug/chat`
+- POST `/v1/public/agent/:username/:slug/speak`
+- GET `/v1/public/agent/:username/:slug/sessions`
+- GET `/v1/public/agent/:username/:slug/sessions/:id`
+- POST `/v1/public/agent/:username/:slug/sessions`
+- PATCH `/v1/public/agent/:username/:slug/sessions/:id/title`
+- DELETE `/v1/public/agent/:username/:slug/sessions/:id`
+
+Notes:
+
+- The `/v1/public/agent/...` routes are authenticated in the current API. They are accessible to the owner or a user/email recipient that has been explicitly shared on the agent.
+- See [Agents](/api/reference/agents) for the verified request and response shapes for publishing, sharing, public invocation, and public session persistence.
 
 ## MCP API (Admin)
 

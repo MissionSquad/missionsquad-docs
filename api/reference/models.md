@@ -10,10 +10,22 @@ Model operations include discovery from configured providers, adding/removing mo
 
 ### GET `/v1/models`
 
-Returns a combined list of your models and agents. Each entry:
+Returns a combined list of your models plus chat-eligible agents.
+
+- Owned agents appear here only when they are published.
+- Shared agents appear here when they are published and explicitly shared to the authenticated caller.
+- Shared agents use a canonical id of `shared/<ownerUsername>/<slug>`.
+
+Each entry:
 
 ```json
 { "id": "my-gpt4", "object": "model", "owned_by": "user" }
+```
+
+Shared agent example:
+
+```json
+{ "id": "shared/john_doe/customer-support-bot", "object": "agent", "owned_by": "john_doe" }
 ```
 
 Example:
