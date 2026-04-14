@@ -123,6 +123,16 @@ Core:
 - DELETE `/v1/core/agents/:username/:slug/shares`
 - POST `/v1/core/generate/prompt`
 - POST `/v1/core/agent-workflow`
+- GET `/v1/core/workflows`
+- POST `/v1/core/workflows`
+- PUT `/v1/core/workflows/:id`
+- DELETE `/v1/core/workflows/:id`
+- POST `/v1/core/workflow-runs`
+- GET `/v1/core/workflows/:id/runs`
+- GET `/v1/core/workflow-runs/:runId`
+- GET `/v1/core/workflow-runs/:runId/hydrated`
+- GET `/v1/core/workflow-runs/:runId/stream`
+- POST `/v1/core/workflow-runs/:runId/cancel`
 - GET `/v1/core/config`
 - POST `/v1/core/scrape-url`
 - GET `/v1/core/tools`
