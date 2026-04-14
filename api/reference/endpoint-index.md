@@ -11,6 +11,7 @@ A consolidated list of user-facing endpoints from the MissionSquad API User Guid
 - GET `/v1/models` — see [Models](/api/reference/models)
 - GET `/v1/modelmap` — see [Models](/api/reference/models)
 - POST `/v1/chat/completions` — see [Chat Completions](/api/reference/chat-completions)
+- POST `/v1/chat/cancel` — see [Chat Completions](/api/reference/chat-completions)
 - POST `/v1/embeddings` — see [Embeddings](/api/reference/embeddings)
 
 ### Providers
@@ -63,6 +64,14 @@ A consolidated list of user-facing endpoints from the MissionSquad API User Guid
 - POST `/v1/core/scrape-url` — see [Core Utilities](/api/reference/core-utilities)
 - GET `/v1/core/tools` — see [Core Utilities](/api/reference/core-utilities)
 - GET `/v1/core/servers` — see [Core Utilities](/api/reference/core-utilities)
+
+### Usage
+
+- GET `/v1/core/usage/raw` — see [Usage](/api/reference/usage)
+- GET `/v1/core/usage/summary` — see [Usage](/api/reference/usage)
+- GET `/v1/core/usage/models` — see [Usage](/api/reference/usage)
+- GET `/v1/core/usage/timeseries` — see [Usage](/api/reference/usage)
+- GET `/v1/core/usage/billing` — see [Usage](/api/reference/usage)
 
 ### Audio and Voice
 
@@ -151,6 +160,7 @@ The [MCP API](/api/mcp-api/) is a separate, admin-only sidecar service. These en
 - [Providers](/api/reference/providers)
 - [Models](/api/reference/models)
 - [Agents](/api/reference/agents)
+- [Usage](/api/reference/usage)
 - [Core Utilities](/api/reference/core-utilities)
 - [Collections](/api/reference/collections)
 - [Vector Stores](/api/reference/vector-stores)

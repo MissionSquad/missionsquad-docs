@@ -64,6 +64,7 @@ console.log(completion.choices[0].message);
 ## OpenAI-Compatible Endpoints
 
 - POST `/v1/chat/completions`
+- POST `/v1/chat/cancel`
 - POST `/v1/embeddings`
 
 Core audio endpoints:
@@ -137,6 +138,11 @@ Core:
 - POST `/v1/core/scrape-url`
 - GET `/v1/core/tools`
 - GET `/v1/core/servers`
+- GET `/v1/core/usage/raw`
+- GET `/v1/core/usage/summary`
+- GET `/v1/core/usage/models`
+- GET `/v1/core/usage/timeseries`
+- GET `/v1/core/usage/billing`
 - POST `/v1/core/collections/:collectionName/search`
 - GET `/v1/core/collections/:collectionName/diagnostics`
 - POST `/v1/core/collections/:collectionName/recover`
@@ -195,6 +201,7 @@ See the full [MCP API documentation](/api/mcp-api/) for endpoint reference and d
 - [Providers](/api/reference/providers)
 - [Models](/api/reference/models)
 - [Agents](/api/reference/agents)
+- [Usage](/api/reference/usage)
 - [Core Utilities](/api/reference/core-utilities)
 - [Collections](/api/reference/collections)
 - [Vector Stores](/api/reference/vector-stores)

@@ -119,6 +119,7 @@ export default withMermaid({
             { text: "Providers", link: "/api/reference/providers" },
             { text: "Models", link: "/api/reference/models" },
             { text: "Agents", link: "/api/reference/agents" },
+            { text: "Usage", link: "/api/reference/usage" },
             { text: "Core Utilities", link: "/api/reference/core-utilities" },
             { text: "Collections", link: "/api/reference/collections" },
             { text: "Vector Stores", link: "/api/reference/vector-stores" },

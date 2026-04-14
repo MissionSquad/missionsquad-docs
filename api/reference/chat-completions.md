@@ -181,8 +181,65 @@ console.log(data.choices?.[0]?.message?.content);
 - `x-client-id`: arbitrary client identifier for event correlation.
 - `x-session-id`: provide to correlate tool-call events and streaming usage metrics within a session.
 
+## Cancel a Streaming Chat
+
+### POST `/v1/chat/cancel`
+
+Cancel an in-flight chat stream by `sessionId`. If you also know the backing `runId`, include it for a broader cancellation lookup.
+
+Body:
+
+```ts
+{
+  sessionId: string
+  runId?: string
+}
+```
+
+Validation behavior:
+
+- `400` if `sessionId` is missing or blank
+
+Example:
+
+```ts
+const res = await fetch("https://agents.missionsquad.ai/v1/chat/cancel", {
+  method: "POST",
+  headers: {
+    "x-api-key": process.env.MSQ_API_KEY!,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    sessionId: "chat-session-123",
+    runId: "run_abc123"
+  })
+});
+
+const data = await res.json();
+console.log(data);
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "found": true,
+  "cancelled": true,
+  "alreadyCancelled": false
+}
+```
+
+Notes:
+
+- `found` indicates whether a matching active stream or run was located
+- `cancelled` indicates that a live stream was cancelled during this request
+- `alreadyCancelled` indicates that a matching target had already been cancelled before this request
+- when only `sessionId` is supplied, the API also checks whether that session maps to a known run and cancels that run if present
+
 ## See also
 
 - [API Overview](/api/)
 - [Embeddings](/api/reference/embeddings)
 - [Agents](/api/reference/agents)
+- [Usage](/api/reference/usage)
