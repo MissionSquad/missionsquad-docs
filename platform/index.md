@@ -18,12 +18,15 @@ This section documents the Mission Squad Platform UI. It covers dashboard naviga
 - [MCP (Tools)](/platform/mcp) — connect tool servers and inspect available functions
 - [Prompt Studio](/platform/prompt-studio) — iterate prompts, stream events, save back to agents
 - [Embeddings](/platform/embeddings) — upload files, manage vector stores, diagnostics
-- [Workflows](/platform/workflows) — compose multi‑agent pipelines
-- [Schedules](/platform/schedules) — run agents/workflows on a cadence with delivery
+- [Workflows](/platform/workflows) — compose multi‑agent pipelines with data interpolation
+- [Factories](/platform/factories) — chain agents and workflows into schedulable pipelines
+- [Video → Workflow](/platform/video-to-workflow) — analyze video and turn demos into workflows
+- [Schedules](/platform/schedules) — run agents/workflows/factories on a cadence with delivery
 - [Recipes](/platform/recipes) — opinionated end‑to‑end examples
 - [Security & Isolation](/platform/security) — guarantees and best practices
 - [Troubleshooting](/platform/troubleshooting) — common issues and quick checks
 - [Hosting](/hosting/) — deploy the Platform API and MCP via Docker & Compose
+- [Mission Squad MCP Server](/mcp-server/) — drive MissionSquad from any AI agent
 
 ## Concepts at a glance
 
@@ -33,5 +36,6 @@ This section documents the Mission Squad Platform UI. It covers dashboard naviga
 - MCP: Model Context Protocol servers that expose callable tools.
 - Prompt Studio: scratchpad to test agents/models and watch tool events.
 - Embeddings: files and vector stores used for RAG.
-- Workflows: multi‑agent orchestration (helpers → primary).
-- Schedules: recurring agent/workflow runs with delivery.
+- Workflows: multi‑agent orchestration (helpers → main) with data interpolation.
+- Factories: ordered pipelines that chain agents and workflows, carrying a payload forward.
+- Schedules: recurring agent/workflow/factory runs with delivery.

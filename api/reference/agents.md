@@ -39,22 +39,43 @@ Response shape:
 
 Create or update an agent.
 
-Body (required + optional fields supported by the server):
+Body (required + optional fields supported by the server). The body is `Omit<NewAgentConfig, "modelId">`
+plus the override fields below; `model` is the model **name** (resolved to a model id server-side):
 
 ```ts
 {
-  name: string;
-  description: string;
-  systemPrompt: string;
-  model: string;                    // name of a model you've added
+  name: string;                     // required
+  description: string;              // required
+  systemPrompt: string;             // required (or supply systemPromptId)
+  systemPromptId?: string;          // a promptId from POST /v1/core/generate/prompt; resolved to systemPrompt
+  model: string;                    // required; name of a model you've added (or its id)
   overwrite?: boolean;
+  previousName?: string;            // if renaming, migrates references in workflows
+  icon?: string;
   addToday?: boolean;               // if true and first message is `system`, current date is injected
   timezoneOffset?: string;          // for date formatting; defaults to "-0500" if not provided
-  selectedFunctions?: {             // preselect MCP functions for the agent (if applicable)
+  tools?: string[];                 // MCP function names; resolved to selectedFunctions automatically
+  selectedFunctions?: {             // or preselect MCP functions per server explicitly
     [serverName: string]: string[];
   };
+  modelOptions?: { temperature?: number; maxTokens?: number };
+  embeddingOptions?: { model: string; collections: string[]; type: string }; // RAG
+  voice?: {                         // attach a saved voice for /speak
+    savedVoiceName: string;
+    responseFormat?: "mp3" | "opus" | "aac" | "flac" | "wav" | "pcm";
+    speed?: number;
+    ttsOptions?: Record<string, unknown>;
+  };
+  responseProcessorAgent?: string;
 }
 ```
+
+Status codes: `200` `{ status: "success", message, data }`; `400` for missing required fields or an
+expired `systemPromptId`; `404` when `model` cannot be resolved; `409` when the agent already exists
+and `overwrite` is not set.
+
+> Programmatic tool calling for Claude is configured on the **model**, not the agent — see
+> [Models](/api/reference/models#programmatic-tool-calling). An agent inherits it from its model.
 
 Example:
 
@@ -91,6 +112,68 @@ await fetch("https://agents.missionsquad.ai/v1/core/delete/agent", {
   body: JSON.stringify({ name: "my-agent" })
 });
 ```
+
+### PUT `/v1/core/update/agent`
+
+Update an existing agent by name. Omitted fields keep their current values. The protected utility
+agents `title-agent` and `msq-config-agent` cannot be modified (`403`).
+
+Body:
+
+```ts
+{
+  name: string;                     // required; identifies the agent
+  description?: string;
+  icon?: string;
+  systemPrompt?: string;
+  systemPromptId?: string;
+  model?: string;                   // model name; defaults to the existing model when omitted
+  addToday?: boolean;
+  timezoneOffset?: string;
+  tools?: string[];
+  selectedFunctions?: { [serverName: string]: string[] };
+  modelOptions?: { temperature?: number; maxTokens?: number };
+  temperature?: number;             // deprecated; use modelOptions.temperature
+  maxTokens?: number;               // deprecated; use modelOptions.maxTokens
+  combineSystemPrompts?: boolean;
+  convertSystemPrompt?: boolean;
+}
+```
+
+Status codes: `200` `{ status: "success", message, data }`; `400` missing `name` / expired
+`systemPromptId`; `403` protected utility agent; `404` agent or model not found.
+
+### POST `/v1/core/agent/speak`
+
+Run an owned agent and stream text deltas plus synthesized audio (TTS) as SSE. The agent must have a
+saved `voice` configured.
+
+Request body:
+
+```ts
+{
+  name: string;                     // agent name
+  messages: Array<{ role: "system" | "user" | "assistant" | "tool"; content: string | null; /* ... */ }>;
+  processorAgentName?: string;      // optional response-processor agent
+  ttsOverrides?: {
+    responseFormat?: "mp3" | "opus" | "aac" | "flac" | "wav" | "pcm"; // default "opus"
+    speed?: number;
+    ttsOptions?: Record<string, unknown>;
+  };
+}
+```
+
+Streaming response (`Content-Type: text/event-stream`):
+
+- `data: {"type":"status","stage":"generating","time":<ms>}` (initial + 10s keepalive)
+- `data: {"type":"text_delta","content":"..."}`
+- `data: {"type":"message_stop"}`
+- `data: {"type":"audio_chunk","b64":"..."}`
+- `data: {"type":"audio_stop"}`
+- `data: {"type":"error","message":"..."}`
+- `data: [DONE]`
+
+Pre-stream errors: `400` (missing `name`/`messages`), `404` (agent not found).
 
 ### POST `/v1/core/agents/publish`
 
@@ -164,6 +247,7 @@ Response body:
   data: Array<{
     agentId: string;
     agentName: string;
+    icon?: string;
     slug: string;
     description: string;
     isPublished: boolean;
@@ -172,9 +256,15 @@ Response body:
     sharedAt: number;
     sharedVia: "username" | "email";
     hasVoice: boolean;
+    editable: boolean;     // true when the owner shared this agent with edit access
+    modelName: string;     // friendly display name of the agent's model
+    toolsCount: number;    // number of MCP functions/tools the agent uses
   }>;
 }
 ```
+
+`editable: true` means you may edit a curated subset of the agent's config via the shared-agent config
+endpoints below.
 
 To invoke one of these via `POST /v1/chat/completions`, construct the shared model id as:
 
@@ -185,12 +275,15 @@ const model = `shared/${ownerUsername}/${slug}`;
 ### POST `/v1/core/agents/:username/:slug/shares`
 
 Create or refresh a share record for a published agent. `:username` must match the authenticated owner.
+Re-issuing this call for the same recipient updates the `editable` flag (there is no separate
+"make editable" endpoint).
 
 Request body:
 
 ```ts
 {
-  recipient: string; // username or email
+  recipient: string;   // username or email
+  editable?: boolean;  // when strictly true, the recipient may edit a curated subset of fields
 }
 ```
 
@@ -220,6 +313,7 @@ Response body:
     recipientType: "username" | "email";
     recipient: string; // normalized lowercase username or email
     createdAt: number;
+    editable: boolean;
   }>;
 }
 ```
@@ -242,6 +336,102 @@ Response body:
 ```ts
 {
   success: boolean;
+}
+```
+
+## Editing a shared agent (collaborative editing)
+
+When an owner shares an agent with `editable: true`, the recipient may edit a curated subset of the
+agent's configuration. Edits are written to the **owner's** agent config. All four endpoints below are
+gated by `enforceSharedAgentEditAccess`: access is allowed for the owner, or for a recipient who holds
+an editable share. Unauthenticated callers get `401` (`code: "AUTH_REQUIRED"`); non-editable callers
+get `403` (`code: "OWNER_OR_SHARED_EDIT_ONLY"`).
+
+### GET `/v1/core/agents/:username/:slug/config`
+
+Fetch the owner's full agent config for editing.
+
+Response body:
+
+```ts
+{
+  success: true;
+  data: AgentConfig;   // the owner's full agent configuration
+  modelName: string;   // friendly model display name
+}
+```
+
+### PUT `/v1/core/agents/:username/:slug/config`
+
+Update the shared agent's config. The **model is never changed** here (it stays the owner's model), and
+non-owners cannot send `name`, `model`, `modelId`, `responseProcessorAgent`, `temperature`, or
+`maxTokens` (those return `400` `code: "FIELD_NOT_EDITABLE"`). Referenced tools, embedding collections,
+and voices must belong to the owner (validated against the owner-resource endpoints below; mismatches
+return `400` `code: "INVALID_OWNER_RESOURCE"`).
+
+Request body (all optional):
+
+```ts
+{
+  description?: string;
+  icon?: string | null;
+  systemPrompt?: string;
+  systemPromptId?: string;
+  modelOptions?: { temperature?: number; maxTokens?: number };
+  addToday?: boolean;
+  timezoneOffset?: string;
+  combineSystemPrompts?: boolean;
+  convertSystemPrompt?: boolean;
+  toolOptions?: {
+    systemTools?: string[];
+    userTools?: string[];
+    selectedFunctions?: { [serverName: string]: string[] };
+  };
+  embeddingOptions?: { model: string; collections: string[]; type: string };
+  voice?: {
+    savedVoiceName?: string | null;
+    responseFormat?: "mp3" | "opus" | "aac" | "flac" | "wav" | "pcm";
+    speed?: number;
+    ttsOptions?: Record<string, unknown>;
+  } | null;
+}
+```
+
+Response body: `{ status: "success", message: string, data: AgentConfig }`.
+
+### GET `/v1/core/agents/:username/:slug/owner-tools`
+
+List the owner's MCP servers and tools so an editor can pick valid `toolOptions`. Returns a
+credential-free projection:
+
+```ts
+{
+  success: true;
+  servers: Array<{ name: string; displayName: string; description: string; enabled: boolean; installed: boolean; source: string }>;
+  tools: unknown; // the owner's tools, grouped by server
+}
+```
+
+### GET `/v1/core/agents/:username/:slug/owner-embeddings`
+
+List the owner's vector stores and embedding models for picking valid `embeddingOptions`:
+
+```ts
+{
+  success: true;
+  vectorStores: Array<{ name: string; safeName: string; embeddingModel: string }>;
+  embeddingModels: Array<{ id: string; name: string; modelName: string; providerKey: string }>;
+}
+```
+
+### GET `/v1/core/agents/:username/:slug/owner-voices`
+
+List the owner's saved voices for picking a valid `voice.savedVoiceName`:
+
+```ts
+{
+  success: true;
+  voices: Array<{ id: string; name: string; providerKey: string; responseFormat: string; speed: number }>;
 }
 ```
 

@@ -25,6 +25,23 @@ Optional OpenAI-style parameters:
 - `response_format` or `responseFormat` for structured output hints.
 - `extra_params` or `extraParams` for provider-specific passthrough options.
 
+MissionSquad-specific parameters (snake_case and camelCase both accepted where noted):
+
+- `sessionId` (camelCase only) — correlate tool-call events and streaming usage; falls back to the
+  `x-session-id` header.
+- `providerState` — provider resume state returned by a previous turn (e.g. for stateful
+  Anthropic containers); pass it back to continue.
+- `request_timeout_ms` / `requestTimeoutMs` — integer, `1`–`1800000`.
+- `max_retries` / `maxRetries` — integer, `0`–`10`.
+
+For a **model** target, remaining OpenAI-style sampling fields (`temperature`, `max_tokens`/
+`maxTokens`, `top_p`/`topP`, `stop`, `frequency_penalty`, `presence_penalty`, etc.) are passed through
+to the provider. For an **agent** target, per-request sampling overrides are ignored — the agent's own
+configuration governs.
+
+> Programmatic tool calling (PTC) for Claude is **not** a request parameter. It is configured on the
+> model — see [Models → Programmatic tool calling](/api/reference/models#programmatic-tool-calling).
+
 Notes:
 
 - `model` may be:

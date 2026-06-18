@@ -20,9 +20,17 @@ Purpose: Run agents (or workflows) on a cadence and deliver results automaticall
 - Use multiple Times to Run for staggered sends.  
 - You can maintain several schedules per agent with different prompts and audiences.
 
+## Scheduling factories
+
+In addition to scheduling single agents, you can schedule a whole [factory](/platform/factories) to run
+on a recurring UTC cadence (`once`/`daily`/`weekly`/`monthly` with one or more times of day). Factory
+schedules carry an optional `initialCarryPayload` that seeds each scheduled run. See
+[Factories → Factory schedules](/api/reference/factories#factory-schedules).
+
 ## API parity
 
-- Scheduling is a managed platform capability. Core chat/vector/files endpoints remain available for programmatic data operations.  
+- Agent scheduling is a managed platform capability. Core chat/vector/files endpoints remain available for programmatic data operations.  
+- Factory schedules: `GET/POST /v1/core/factory-schedules`, `PUT/DELETE /v1/core/factory-schedules/:id`, `.../toggle` — see [Factories](/api/reference/factories).  
 See [Chat Completions](/api/reference/chat-completions), [Vector Stores](/api/reference/vector-stores), [Files](/api/reference/files).
 
 <!-- ## Screenshot placeholder

@@ -193,6 +193,25 @@ The MissionSquad API communicates with the MCP API internally via the `TOOLS_HOS
 
 See the full [MCP API documentation](/api/mcp-api/) for endpoint reference and deployment details.
 
+## Orchestration & advanced features
+
+- [Workflows](/api/reference/workflows) — saved multi-agent pipelines with data interpolation
+  (<code v-pre>{{ data }}</code> templates and `<selector|#|dataKey>` helper selectors) and resumable
+  streaming runs.
+- [Factories](/api/reference/factories) — chain agents and workflows into sequential, payload-carrying
+  pipelines that can loop and run on a schedule.
+- [Video Processing](/api/reference/video) — analyze video with a vision model, or convert a demo
+  recording into a workflow outline.
+- [MCP Servers (Connect & OAuth)](/api/reference/mcp-servers) — connect remote MCP servers, including
+  OAuth 2.0 with Dynamic Client Registration.
+- [Webhooks](/api/reference/webhooks) — trigger agents/tools from external systems.
+
+## Hosted MCP Server
+
+The [Mission Squad MCP Server](/mcp-server/) (`https://mcp.missionsquad.ai`) exposes this entire API to
+AI agents as Model Context Protocol tools — authenticate with your MissionSquad API key and call any of
+its 76 `msq_*` tools.
+
 ## See also
 
 - [Chat Completions](/api/reference/chat-completions)
@@ -201,6 +220,10 @@ See the full [MCP API documentation](/api/mcp-api/) for endpoint reference and d
 - [Providers](/api/reference/providers)
 - [Models](/api/reference/models)
 - [Agents](/api/reference/agents)
+- [Workflows](/api/reference/workflows)
+- [Factories](/api/reference/factories)
+- [Video Processing](/api/reference/video)
+- [MCP Servers (Connect & OAuth)](/api/reference/mcp-servers)
 - [Usage](/api/reference/usage)
 - [Core Utilities](/api/reference/core-utilities)
 - [Collections](/api/reference/collections)
@@ -209,4 +232,5 @@ See the full [MCP API documentation](/api/mcp-api/) for endpoint reference and d
 - [Webhooks](/api/reference/webhooks)
 - [Convenience](/api/reference/convenience)
 - [Endpoint Index](/api/reference/endpoint-index)
+- [Mission Squad MCP Server](/mcp-server/)
 - [MCP API (Admin)](/api/mcp-api/)

@@ -33,6 +33,7 @@
   "dependencies": {
     "medium-zoom": "^1.1.0",
     "mermaid": "^11.11.0",
+    "vitepress-plugin-llms": "^1.13.1",
     "vitepress-plugin-mermaid": "^2.0.17"
   }
 }

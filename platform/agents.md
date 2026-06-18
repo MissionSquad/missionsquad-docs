@@ -65,6 +65,27 @@ Purpose: Specialize a model with a system prompt, optional tools, and optional R
   <img src="./images/agents-advanced.png" alt="Advanced Options" style="margin-left: 10px; max-width: 40%;">
 </div>
 
+## Sharing agents
+
+Publish an agent and share it with another user (by username or email). Sharing has two modes:
+
+- **Read‑only** — the recipient can run the agent and (depending on configuration) see it in their
+  shared list.
+- **Editable** — granted by sharing with edit access. The recipient can change a curated subset of the
+  agent's configuration (description, system prompt, model options, tools, RAG collections, and voice),
+  but **not** the underlying model, name, or response‑processor agent. Edits write back to your copy of
+  the agent, and any tools/collections/voices the recipient picks must be ones you own — they choose
+  from your resources, surfaced through dedicated owner‑resource listings.
+
+Recipients can also run a shared agent directly from chat completions by targeting
+`model: "shared/<ownerUsername>/<slug>"`.
+
+## Programmatic tool calling
+
+Programmatic tool calling (Claude code‑execution tool use) is configured on the **model**, not the
+agent — an agent inherits it from its model. It is enabled automatically for Claude Sonnet/Opus 4.6+.
+See [Models → Programmatic tool calling](/api/reference/models#programmatic-tool-calling).
+
 ## Design guidance
 
 - Keep prompts explicit about sources of truth and cite/tool behavior (e.g., “always ground answers in RAG or tool output”).  
@@ -74,8 +95,9 @@ Purpose: Specialize a model with a system prompt, optional tools, and optional R
 ## API parity
 
 - List: `GET /v1/core/agents`  
-- Add/update: `POST /v1/core/add/agent`  
+- Add: `POST /v1/core/add/agent` · Update: `PUT /v1/core/update/agent`  
 - Delete: `POST /v1/core/delete/agent`  
+- Share (editable): `POST /v1/core/agents/:username/:slug/shares` with `editable: true`  
 - Run via OpenAI‑compatible chat: `POST /v1/chat/completions` with `model: "<agent-name>"`  
 See [Agents](/api/reference/agents) and [Chat Completions](/api/reference/chat-completions)
 
