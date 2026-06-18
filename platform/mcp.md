@@ -24,10 +24,35 @@ Purpose: Connect tool servers that expose functions your agents can call.
 - Start with read‑only functions; expand to write actions (e.g., GitHub `create_issue`) once confident.
 - Grant least privilege by selecting only the functions an agent truly needs.
 
+## Connecting external (remote) MCP servers
+
+Beyond platform‑managed servers, you can connect **external** MCP servers — remote, Streamable HTTP
+servers hosted elsewhere — to your account, including ones protected by OAuth 2.0. MissionSquad runs
+the whole OAuth 2.0 authorization‑code + PKCE flow for you and supports three client‑registration
+strategies:
+
+- **CIMD** (Client ID Metadata Document) — MissionSquad's served metadata URL is the `client_id`.
+- **DCR** (Dynamic Client Registration) — MissionSquad registers a client with the provider
+  automatically.
+- **Manual** — you supply a `client_id`/`client_secret`.
+
+The flow is: discover the server's OAuth metadata → register it → install it → start the OAuth flow
+(approve in a popup) → call its tools. For API‑key servers, save per‑server secrets instead of running
+OAuth. See [MCP Servers (Connect & OAuth)](/api/reference/mcp-servers) for the full API.
+
+## Mission Squad's own MCP server
+
+To let an AI agent drive MissionSquad itself, use the hosted
+[Mission Squad MCP Server](/mcp-server/) at `https://mcp.missionsquad.ai`. It exposes the entire API
+(models, agents, workflows, factories, collections, files, and more) as `msq_*` tools, authenticated
+with your MissionSquad API key.
+
 ## API parity
 
 - Servers inventory: `GET /v1/core/servers`
 - Tools inventory: `GET /v1/core/tools`
+- Connect external servers + OAuth: see [MCP Servers (Connect & OAuth)](/api/reference/mcp-servers)
+
 See [Core Utilities](/api/reference/core-utilities)
 
 ## Operator / Admin API

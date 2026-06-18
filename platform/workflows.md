@@ -8,10 +8,24 @@ Purpose: Compose multi‑agent pipelines. Helper agents run first (in parallel),
 
 ## Concepts
 
-- Primary Agent: the final agent that produces the delivered output.
-- Helper Agents: upstream agents that generate structured inputs (facts, summaries, lists) for the primary agent.
-- Interpolation: named placeholders (e.g., `{{research}}`, `{{pros_cons}}`) filled with helper outputs.
-- Parallelism: helper agents run in parallel where safe to do so for latency savings.
+- Main Agent: the final agent that produces the delivered output.
+- Helper Agents: upstream agents that generate structured inputs (facts, summaries, lists) for the main agent.
+- Data interpolation: the workflow's `mainPrompt` can interpolate both **helper outputs** and **your supplied data**.
+- Parallelism: helper agents run in batches (set by `concurrency`).
+
+## Interpolating data, not just agents
+
+Workflows now interpolate plain data alongside agent outputs. You supply a JSON object as the
+workflow's `dataPayload` (and can override it per run), then reference it in `mainPrompt` two ways:
+
+- **Data templates** <code v-pre>{{ path }}</code> — replaced inline with a value from `dataPayload`
+  (text, or pretty‑printed JSON for objects/arrays). Supports dotted paths and array indices, e.g.
+  <code v-pre>{{ audience.segment }}</code> or <code v-pre>{{ sources.0.title }}</code>.
+- **Helper selectors** `<selector|#|dataKey>` — run a helper agent and substitute its output. The
+  `dataKey` can itself be a <code v-pre>{{...}}</code> template, a top‑level data key, a comma‑separated
+  list, or a `{ "scrape_url": "https://..." }` object (the page is fetched and inlined).
+
+The selector delimiter defaults to `|#|` and is configurable per workflow.
 
 ## Design tips
 
@@ -22,8 +36,11 @@ Purpose: Compose multi‑agent pipelines. Helper agents run first (in parallel),
 
 ## API parity
 
-- Execute workflow: `POST /v1/core/agent-workflow`  
-See [Core Utilities](/api/reference/core-utilities)
+- Saved configs + resumable runs: `POST /v1/core/workflows`, `POST /v1/core/workflow-runs`
+- Legacy immediate execution: `POST /v1/core/agent-workflow`
+
+See [Workflows (API)](/api/reference/workflows). To chain workflows and agents into longer,
+schedulable pipelines, see [Factories](/platform/factories).
 
 <!-- ## Screenshot placeholder
 

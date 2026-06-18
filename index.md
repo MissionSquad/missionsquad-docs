@@ -7,6 +7,7 @@ Welcome to the Mission Squad documentation. Use the navigation to explore the Pl
 - [Hosting](/hosting/)
 - [API Overview](/api/)
 - [Endpoint Index](/api/reference/endpoint-index)
+- [Mission Squad MCP Server](/mcp-server/)
 
 ## Platform (Cloud or Customer‑Hosted UI)
 
@@ -19,8 +20,10 @@ Quick links:
 - [MCP (Tools)](/platform/mcp) — connect tool servers and inspect available functions
 - [Prompt Studio](/platform/prompt-studio) — iterate prompts, stream events, save back to agents
 - [Embeddings](/platform/embeddings) — upload files, manage vector stores, diagnostics
-- [Workflows](/platform/workflows) — compose multi‑agent pipelines
-- [Schedules](/platform/schedules) — run agents/workflows on a cadence with delivery
+- [Workflows](/platform/workflows) — compose multi‑agent pipelines with data interpolation
+- [Factories](/platform/factories) — chain agents and workflows into schedulable pipelines
+- [Video → Workflow](/platform/video-to-workflow) — analyze video and turn demos into workflows
+- [Schedules](/platform/schedules) — run agents/workflows/factories on a cadence with delivery
 - [Recipes](/platform/recipes) — opinionated end‑to‑end examples
 - [Security & Isolation](/platform/security) — guarantees and best practices
 - [Troubleshooting](/platform/troubleshooting) — common issues and quick checks
@@ -30,6 +33,12 @@ Quick links:
 - Read the full API Overview [here](/api/).
 - Use the official OpenAI SDK by setting `baseURL` to your Mission Squad API and passing your Mission Squad API key as `apiKey` (Authorization: `Bearer msq-...` accepted). See [API](/api/) and [chat completions](/api/reference/chat-completions) for examples.
 - For embeddings, use a supported embedding model such as `text-embedding-3-small` or `nomic-embed-text-v1.5`. `text-embedding-3-large` is not supported and requests will return HTTP 400.
+
+## Mission Squad MCP Server
+
+The [Mission Squad MCP Server](/mcp-server/) lets any MCP-capable AI agent drive MissionSquad — manage
+agents, workflows, factories, collections, and files, and run chat/embeddings — using your MissionSquad
+API key. Use the hosted endpoint at `https://mcp.missionsquad.ai`, or run it locally over stdio.
 
 ## MCP API (Admin)
 

@@ -1,4 +1,35 @@
 import { withMermaid } from "vitepress-plugin-mermaid";
+import llmstxt from "vitepress-plugin-llms";
+import fs from "node:fs";
+import path from "node:path";
+import type { Plugin } from "vite";
+
+// `vitepress dev` (port 5173) only serves the per-page `<path>.md` LLM variants;
+// the aggregate `llms.txt` / `llms-full.txt` are build artifacts and otherwise fall
+// through to the SPA HTML in dev. This dev-only shim serves the last build's copies
+// from `.vitepress/dist` so the dev server matches `vitepress preview` and production.
+// (Run `yarn build` once to populate them; they refresh on each build.)
+function serveBuiltLlmsTxtInDev(): Plugin {
+  const targets = new Set(["/llms.txt", "/llms-full.txt"]);
+  return {
+    name: "serve-built-llms-txt-in-dev",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url ?? "").split("?")[0] ?? "";
+        if (!targets.has(url)) return next();
+        try {
+          const file = path.resolve(process.cwd(), ".vitepress/dist", url.slice(1));
+          const content = fs.readFileSync(file, "utf8");
+          res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          res.end(content);
+        } catch {
+          next(); // not built yet — let VitePress handle it
+        }
+      });
+    },
+  };
+}
 
 export default withMermaid({
   title: "Mission Squad Docs",
@@ -12,6 +43,18 @@ export default withMermaid({
   },
   // Dev-only proxy to route local API requests without CORS issues.
   vite: {
+    plugins: [
+      serveBuiltLlmsTxtInDev(),
+      // Generates /llms.txt (section index), /llms-full.txt (full bundle), and a
+      // Markdown variant of every page for AI agents. `domain` makes the links in
+      // llms.txt absolute; `ignoreFiles` keeps repo meta-docs out of the LLM output.
+      llmstxt({
+        domain: "https://docs.missionsquad.ai",
+        description:
+          "MissionSquad API and platform documentation for developers and AI agents. OpenAI-compatible chat/embeddings, agents, workflows, factories, video analysis, webhooks, and a hosted MCP server.",
+        ignoreFiles: ["**/README.md", "VITEPRESS_GUIDE.md", "tasks/**", "platform/images/**"],
+      }),
+    ],
     server: {
       proxy: {
         "/api/embed": {
@@ -66,6 +109,7 @@ export default withMermaid({
       { text: "Platform", link: "/platform/" },
       { text: "Hosting", link: "/hosting/" },
       { text: "API", link: "/api/" },
+      { text: "MCP Server", link: "/mcp-server/" },
     ],
     sidebar: {
       "/platform/": [
@@ -84,6 +128,8 @@ export default withMermaid({
             { text: "Prompt Studio", link: "/platform/prompt-studio" },
             { text: "Embeddings", link: "/platform/embeddings" },
             { text: "Workflows", link: "/platform/workflows" },
+            { text: "Factories", link: "/platform/factories" },
+            { text: "Video → Workflow", link: "/platform/video-to-workflow" },
             { text: "Schedules", link: "/platform/schedules" },
             { text: "Recipes", link: "/platform/recipes" },
             { text: "Security & Isolation", link: "/platform/security" },
@@ -119,6 +165,10 @@ export default withMermaid({
             { text: "Providers", link: "/api/reference/providers" },
             { text: "Models", link: "/api/reference/models" },
             { text: "Agents", link: "/api/reference/agents" },
+            { text: "Workflows", link: "/api/reference/workflows" },
+            { text: "Factories", link: "/api/reference/factories" },
+            { text: "Video Processing", link: "/api/reference/video" },
+            { text: "MCP Servers (Connect & OAuth)", link: "/api/reference/mcp-servers" },
             { text: "Usage", link: "/api/reference/usage" },
             { text: "Core Utilities", link: "/api/reference/core-utilities" },
             { text: "Collections", link: "/api/reference/collections" },
@@ -136,6 +186,16 @@ export default withMermaid({
             { text: "Packages", link: "/api/mcp-api/packages" },
             { text: "Servers & Tools", link: "/api/mcp-api/servers" },
             { text: "Secrets", link: "/api/mcp-api/secrets" },
+          ],
+        },
+      ],
+      "/mcp-server/": [
+        {
+          text: "Mission Squad MCP Server",
+          items: [
+            { text: "Overview", link: "/mcp-server/" },
+            { text: "Connect", link: "/mcp-server/#connecting" },
+            { text: "Tool Reference", link: "/mcp-server/#tool-reference" },
           ],
         },
       ],
