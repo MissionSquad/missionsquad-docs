@@ -131,20 +131,16 @@ Calls an MCP tool with the payload merged over `mcpToolParams`.
 { "success": true, "skipped": true, "reason": "conditions_not_met" }
 ```
 
-Conditions evaluate against the object `{ body, headers }`, so paths look like `body.action` or `headers.x-github-event` (header names are lowercased).
+Conditions evaluate against the object `{ body, headers }`, so paths look like `body.action` or `headers.x-github-event` (header names are lowercased). A `conditions` fragment inside `triggerConfig` looks like this:
 
 ```json
 {
-  "triggerConfig": {
-    "action": "run_agent",
-    "actionParams": { "agentName": "pr-reviewer", "promptTemplate": "Review {{pull_request.html_url}}" },
-    "conditions": {
-      "all": [
-        { "path": "headers.x-github-event", "op": "eq", "value": "pull_request" },
-        { "path": "body.action", "op": "in", "value": ["opened", "synchronize", "reopened", "ready_for_review"] },
-        { "path": "body.pull_request.draft", "op": "eq", "value": false }
-      ]
-    }
+  "conditions": {
+    "all": [
+      { "path": "headers.x-github-event", "op": "eq", "value": "pull_request" },
+      { "path": "body.action", "op": "in", "value": ["opened", "synchronize", "reopened", "ready_for_review"] },
+      { "path": "body.pull_request.draft", "op": "eq", "value": false }
+    ]
   }
 }
 ```
@@ -185,7 +181,7 @@ A `*` path segment maps over an array and matches if **any** element passes (for
     "title": { "$path": "body.pull_request.title" },
     "summary": { "$template": "PR #{{body.number}} by {{body.pull_request.user.login}}" },
     "labels": { "$join": { "path": "body.pull_request.labels.*.name", "separator": ", " } },
-    "milestone": { "$path": "body.milestone.title", "$default": "none" },
+    "milestone": { "$path": "body.pull_request.milestone.title", "$default": "none" },
     "source": "github"
   }
 }
