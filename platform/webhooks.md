@@ -28,7 +28,7 @@ Create a webhook that runs an agent, save the secret, and trigger it. That's the
 }
 ```
 
-**2. Save the secret from the creation response.** The `201` response contains the webhook's raw secret as a top-level field — this is the **only time it is ever returned** (only a hash is stored):
+**2. Save the secret from the creation response.** The `201` response contains the webhook's raw secret as a top-level field — this is the **only time it is ever returned**; it cannot be retrieved later (see [Security](#security) for how it is stored):
 
 ```json
 {
