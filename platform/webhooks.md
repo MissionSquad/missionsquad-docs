@@ -102,7 +102,14 @@ Starts a factory run; identical response semantics to `run_workflow` (immediate 
 | `factoryConfigId` | Factory config id to run (required). |
 | `initialCarryPayload` | Optional static JSON string used as the initial carry payload. |
 
-The initial carry payload follows the same precedence as `run_workflow` (transformed payload, then the static value, then the inbound body). Factory runs count against your concurrent factory run limit; at the limit the trigger fails with `FACTORY_CONCURRENT_LIMIT_REACHED`.
+The initial carry payload is chosen with this precedence:
+
+1. The transformed payload, when `payloadTransform` is configured (see below).
+2. `actionParams.initialCarryPayload`, when set.
+3. The inbound request body, when it is a non-empty JSON object.
+4. Otherwise the run starts with an empty carry payload.
+
+Factory runs count against your concurrent factory run limit; at the limit the trigger fails with `FACTORY_CONCURRENT_LIMIT_REACHED`.
 
 Check progress via `GET /v1/core/factory-runs/:runId`.
 
@@ -178,6 +185,7 @@ A `*` path segment maps over an array and matches if **any** element passes (for
     "title": { "$path": "body.pull_request.title" },
     "summary": { "$template": "PR #{{body.number}} by {{body.pull_request.user.login}}" },
     "labels": { "$join": { "path": "body.pull_request.labels.*.name", "separator": ", " } },
+    "milestone": { "$path": "body.milestone.title", "$default": "none" },
     "source": "github"
   }
 }
@@ -190,6 +198,8 @@ A `*` path segment maps over an array and matches if **any** element passes (for
 | `$path` | The resolved value verbatim (any JSON type). Missing: `$default` if set, else `null`. Wildcard paths produce a flattened array. |
 | `$template` | A rendered string; unresolvable placeholders render as empty strings. |
 | `$join` | A string: the resolved array's elements joined with `separator` (default `,`). Missing: `$default` if set, else an empty string. |
+
+`$default` sits alongside `$path` or `$join` in the same directive object — see the `"milestone"` key in the example above. It is used only when the path does not resolve; for `$path` it may be any scalar, for `$join` it must be a string. (`$template` does not take a `$default` — misses simply render as empty strings.)
 
 Plain strings, numbers, booleans, and `null` are literals; nested objects and arrays are evaluated recursively. Limits: 64 output keys, 4 nesting levels, 2000 characters per template; output keys must match `[A-Za-z0-9_-]` (1–64 chars).
 
