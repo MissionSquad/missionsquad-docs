@@ -47,10 +47,10 @@ You may also supply your own secret at creation time with a top-level `"secret"`
 curl -X POST https://agents.missionsquad.ai/webhooks/trigger/YOUR_WEBHOOK_ID \
   -H "Content-Type: application/json" \
   -H "X-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
-  -d '{"ticketId": "12345", "description": "User cannot login"}'
+  -d '{"ticketId": "12345", "description": "User cannot log in"}'
 ```
 
-The JSON body is the payload. Placeholders in `promptTemplate` are filled from it, so the agent receives: `Handle support ticket: 12345. Description: User cannot login`.
+The JSON body is the payload. Placeholders in `promptTemplate` are filled from it, so the agent receives: `Handle support ticket: 12345. Description: User cannot log in`.
 
 For advanced features — triggering workflows/factories, gating on payload values, reshaping payloads, and GitHub integration — read on. All of them are opt-in; a basic webhook never needs them.
 
@@ -244,7 +244,7 @@ Then in your GitHub repository: **Settings → Webhooks → Add webhook**
     ```
 
     `runId` is present for `run_workflow` / `run_factory`. Observe outcomes via the execution history endpoint or the run APIs.
-*   **Duplicate deliveries are idempotent**: GitHub occasionally redelivers events; a delivery id (`X-GitHub-Delivery`) that was already processed responds `200` with `"reason": "duplicate_delivery"` and runs nothing.
+*   **Duplicate deliveries are idempotent**: GitHub occasionally redelivers events; a delivery id (`X-GitHub-Delivery`) that was already processed responds `200` with `{ "success": true, "skipped": true, "reason": "duplicate_delivery" }` and runs nothing.
 *   `ping` events are answered without dispatching the action or counting a trigger.
 
 Note for container images: multi-arch packages can emit one `registry_package` event per manifest — use conditions (or dedup on your side) if you only want one action per publish. For CI-coupled flows (e.g. "review after checks pass"), a GitHub Actions job that calls the MissionSquad API remains a good alternative to direct webhooks.
