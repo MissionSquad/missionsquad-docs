@@ -44,7 +44,7 @@ You may also supply your own secret at creation time with a top-level `"secret"`
 **3. Trigger it** with the secret in the `X-Webhook-Secret` header:
 
 ```bash
-curl -X POST https://api.missionsquad.ai/webhooks/trigger/YOUR_WEBHOOK_ID \
+curl -X POST https://agents.missionsquad.ai/webhooks/trigger/YOUR_WEBHOOK_ID \
   -H "Content-Type: application/json" \
   -H "X-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
   -d '{"ticketId": "12345", "description": "User cannot login"}'
@@ -283,13 +283,13 @@ OAuth callback webhooks handle the redirect flow from OAuth providers.
   "oauthConfig": {
     "provider": "github",
     "state": "random_secure_string",
-    "redirectUri": "https://api.missionsquad.ai/webhooks/oauth/callback/{webhookId}",
+    "redirectUri": "https://agents.missionsquad.ai/webhooks/oauth/callback/{webhookId}",
     "mcpServerName": "github-mcp"
   }
 }
 ```
 
-1.  **Configure Provider**: Register your application with the OAuth provider and set the callback URL to `https://api.missionsquad.ai/webhooks/oauth/callback/YOUR_WEBHOOK_ID`.
+1.  **Configure Provider**: Register your application with the OAuth provider and set the callback URL to `https://agents.missionsquad.ai/webhooks/oauth/callback/YOUR_WEBHOOK_ID`.
 2.  **Initiate Flow**: Direct the user to the provider's authorization URL.
 3.  **Handle Redirect**: The provider redirects back to the webhook URL with a `code` and `state`.
 4.  **Token Exchange**: MissionSquad validates the `state`, exchanges the `code` for an access token, and stores it encrypted.

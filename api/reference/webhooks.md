@@ -267,13 +267,13 @@ Trigger a `generic_trigger` webhook. **Public**, authenticated per the webhook's
 Pipeline before the action runs:
 
 - **Duplicate deliveries**: when an `X-GitHub-Delivery` header is present and was already processed for
-  this webhook, the request answers `200` with `{ skipped: true, reason: "duplicate_delivery" }` and
-  runs nothing.
+  this webhook, the request answers `200` with
+  `{ success: true, skipped: true, reason: "duplicate_delivery" }` and runs nothing.
 - **Ping** (`hmac_sha256` mode only): an `X-GitHub-Event: ping` delivery answers
   `{ success: true, message: "pong" }` without dispatching.
 - **Conditions**: when configured and not met, the request answers `200` with
-  `{ skipped: true, reason: "conditions_not_met" }`, records a `skipped` execution, and does not count
-  a trigger.
+  `{ success: true, skipped: true, reason: "conditions_not_met" }`, records a `skipped` execution, and
+  does not count a trigger.
 - **Transform**: when configured, the payload is reshaped before the action (see the platform guide).
 
 How the payload is used:
