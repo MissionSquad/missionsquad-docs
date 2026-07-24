@@ -40,7 +40,7 @@ interface TriggerConfig {
     mcpServerName?: string    // for "call_mcp_tool"
     mcpToolName?: string
     mcpToolParams?: Record<string, any>
-    customHandler?: string    // for "custom"
+    customHandler?: string    // for "custom" — reserved: currently acknowledges without side effects
   }
   conditions?: WebhookConditionGroup              // optional gate; absent = always run
   payloadTransform?: Record<string, unknown>      // optional whitelist mapping; absent = payload unchanged

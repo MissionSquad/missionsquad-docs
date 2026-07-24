@@ -6,7 +6,7 @@ MissionSquad supports three webhook types:
 
 1.  **Generic Trigger**: run an agent, workflow, or factory — or call an MCP tool — via an HTTP POST request.
 2.  **OAuth Callback**: handle OAuth 2.0 redirects to authenticate MCP servers or other integrations.
-3.  **Outbound**: send events from MissionSquad to an external URL (triggered by internal events, not external calls).
+3.  **Outbound**: send events from MissionSquad to an external URL (triggered by internal events, not external calls). See the [API reference](/api/reference/webhooks) for the `outboundConfig` schema.
 
 ## Quick Start: A Basic Webhook
 
@@ -60,7 +60,7 @@ For advanced features — triggering workflows/factories, gating on payload valu
 
 ### run_agent
 
-Runs an agent synchronously with a rendered prompt.
+Runs an agent with a rendered prompt.
 
 | `actionParams` field | Description |
 | --- | --- |
