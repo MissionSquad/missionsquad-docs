@@ -73,7 +73,7 @@ Placeholders support **dot paths** into nested payloads and format objects as JS
 New PR "{{pull_request.title}}" by {{pull_request.user.login}}
 ```
 
-Unknown placeholders are left literally in place. The action's result is included in the response when `sendResultInResponse` is `true`.
+Unknown placeholders are left literally in place. In sync mode (the default) the action's result is included in the response when `sendResultInResponse` is `true`; in async mode the trigger returns `202` immediately and the result lands in the execution history instead.
 
 ### run_workflow
 
