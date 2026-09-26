@@ -59,7 +59,12 @@ plus the override fields below; `model` is the model **name** (resolved to a mod
     [serverName: string]: string[];
   };
   modelOptions?: { temperature?: number; maxTokens?: number };
-  embeddingOptions?: { model: string; collections: string[]; type: string }; // RAG
+  embeddingOptions?: {
+    model: string;
+    collections: string[];
+    type: string;
+    resultCount?: number;           // total RAG passages, integer 1–100; omit for legacy defaults
+  };
   voice?: {                         // attach a saved voice for /speak
     savedVoiceName: string;
     responseFormat?: "mp3" | "opus" | "aac" | "flac" | "wav" | "pcm";
@@ -71,8 +76,39 @@ plus the override fields below; `model` is the model **name** (resolved to a mod
 ```
 
 Status codes: `200` `{ status: "success", message, data }`; `400` for missing required fields or an
-expired `systemPromptId`; `404` when `model` cannot be resolved; `409` when the agent already exists
+expired `systemPromptId` or invalid `embeddingOptions.resultCount`; `404` when `model` cannot be resolved; `409` when the agent already exists
 and `overwrite` is not set.
+
+`embeddingOptions.resultCount` limits the total number of document passages included in each RAG
+retrieval across all selected collections. Candidates are ordered by ascending distance before
+selection, so a more relevant passage in a later collection can displace one in an earlier collection.
+The Document search event contains the selected passages in the same order as the model's context;
+`totalCandidates` counts returned candidates before filtering and selection. Fewer passages can be
+returned when there are not enough usable results.
+
+Omit `resultCount` to preserve the legacy defaults: **5 for agent calls; 10 for Missions**. Valid values
+are JSON integer numbers from **1 through 100**, inclusive. Strings such as `"20"`, `null`, booleans,
+fractions, zero, negative values, and values above 100 return `400` before configuration changes.
+The count is independent of model sampling `topK` and the manual Embeddings search limit. It does not
+guarantee that the selected passages fit every model's context window.
+
+For example, include this object when creating or saving a RAG agent:
+
+```json
+{
+  "embeddingOptions": {
+    "model": "embedding-model-id",
+    "collections": ["manuals", "support"],
+    "type": "open",
+    "resultCount": 20
+  }
+}
+```
+
+To clear an explicit count, supply the embedding options with `resultCount` omitted. Do not send
+`null` or zero. Omitted defaults are not written into saved configurations. A saved change applies
+to subsequent retrievals; historical prompts/events and existing Mission agent snapshots are not
+rewritten.
 
 > Programmatic tool calling for Claude is configured on the **model**, not the agent — see
 > [Models](/api/reference/models#programmatic-tool-calling). An agent inherits it from its model.
@@ -117,6 +153,10 @@ await fetch("https://agents.missionsquad.ai/v1/core/delete/agent", {
 
 Update an existing agent by name. Omitted fields keep their current values. The protected utility
 agents `title-agent` and `msq-config-agent` cannot be modified (`403`).
+
+This legacy partial-update endpoint preserves existing `embeddingOptions`, including an explicit
+`resultCount`. To author or clear RAG settings, use `POST /v1/core/add/agent` with the complete agent
+configuration and `overwrite: true`.
 
 Body:
 
@@ -387,7 +427,7 @@ Request body (all optional):
     userTools?: string[];
     selectedFunctions?: { [serverName: string]: string[] };
   };
-  embeddingOptions?: { model: string; collections: string[]; type: string };
+  embeddingOptions?: { model: string; collections: string[]; type: string; resultCount?: number };
   voice?: {
     savedVoiceName?: string | null;
     responseFormat?: "mp3" | "opus" | "aac" | "flac" | "wav" | "pcm";
@@ -398,6 +438,13 @@ Request body (all optional):
 ```
 
 Response body: `{ status: "success", message: string, data: AgentConfig }`.
+
+For shared updates, omitting the entire `embeddingOptions` object preserves the current options and
+any explicit count. Supplying an options object replaces those options: omit its `resultCount` to
+clear a previously chosen count and restore the path-specific defaults (5 for agent calls; 10 for
+Missions). Explicit counts use the same integer 1–100 validation as ordinary saves, with invalid
+values returning `400` before changes are saved. Owner-resource and shared-edit access checks still
+apply.
 
 ### GET `/v1/core/agents/:username/:slug/owner-tools`
 
