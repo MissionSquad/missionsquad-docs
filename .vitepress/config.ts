@@ -35,6 +35,7 @@ export default withMermaid({
   title: "Mission Squad Docs",
   description: "MissionSquad API and Guides",
   srcDir: ".",
+  srcExclude: ["public/downloads/**"],
   cleanUrls: true,
   ignoreDeadLinks: true,
   lastUpdated: true,
@@ -52,7 +53,7 @@ export default withMermaid({
         domain: "https://docs.missionsquad.ai",
         description:
           "MissionSquad API and platform documentation for developers and AI agents. OpenAI-compatible chat/embeddings, agents, workflows, factories, video analysis, webhooks, and a hosted MCP server.",
-        ignoreFiles: ["**/README.md", "VITEPRESS_GUIDE.md", "tasks/**", "platform/images/**"],
+        ignoreFiles: ["**/README.md", "VITEPRESS_GUIDE.md", "tasks/**", "platform/images/**", "public/downloads/**"],
       }),
     ],
     server: {
@@ -194,6 +195,8 @@ export default withMermaid({
           text: "Mission Squad MCP Server",
           items: [
             { text: "Overview", link: "/mcp-server/" },
+            { text: "ChatGPT Desktop Setup", link: "/mcp-server/chatgpt-desktop" },
+            { text: "Claude Desktop Setup", link: "/mcp-server/claude-desktop" },
             { text: "Connect", link: "/mcp-server/#connecting" },
             { text: "Tool Reference", link: "/mcp-server/#tool-reference" },
           ],

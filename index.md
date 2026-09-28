@@ -40,6 +40,10 @@ The [Mission Squad MCP Server](/mcp-server/) lets any MCP-capable AI agent drive
 agents, workflows, factories, collections, and files, and run chat/embeddings — using your MissionSquad
 API key. Use the hosted endpoint at `https://mcp.missionsquad.ai`, or run it locally over stdio.
 
+Install the npm server and configuration skill with the
+[ChatGPT desktop guide](/mcp-server/chatgpt-desktop) or
+[Claude desktop guide](/mcp-server/claude-desktop).
+
 ## MCP API (Admin)
 
 The [MCP API](/api/mcp-api/) is an admin-only companion service deployed as a sidecar alongside the MissionSquad API. It manages MCP server lifecycle, package installation, encrypted secret storage, and tool execution. Instance operators use it to install/upgrade MCP packages, register servers, and manage per-user tool credentials.

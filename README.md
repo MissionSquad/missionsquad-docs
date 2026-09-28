@@ -136,6 +136,27 @@ Use `nginx.conf.example` in this directory as a starting point. Key points:
 
 ## Scripts Reference
 
+### Downloadable MCP configuration skill
+
+The desktop installation guides share `public/downloads/msq-config-agent.zip`.
+Its editable source is `public/downloads/skills/msq-config-agent/`; keep supporting
+Markdown files under `references/` so the paths in `SKILL.md` resolve in both apps.
+The skill is instruction-only and contains no MCP configuration or credentials.
+
+After editing the skill, regenerate and validate the committed download with
+Python 3 (standard library only):
+
+```sh
+python3 scripts/packageMcpSkill.py
+python3 scripts/packageMcpSkill.py --check
+yarn build
+```
+
+Commit both source changes and the ZIP. VitePress copies these public assets into
+the built site. The same archive is used by both desktop guides; do not add a
+Claude plugin wrapper or a second nested `.skill` archive. A static docs build
+does not need an API key or a paid search-index rebuild.
+
 From `docs/package.json`:
 - `dev`: VitePress dev
 - `build:search`: Build embeddings index
