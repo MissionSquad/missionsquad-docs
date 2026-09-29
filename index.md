@@ -38,7 +38,8 @@ Quick links:
 
 The [Mission Squad MCP Server](/mcp-server/) lets any MCP-capable AI agent drive MissionSquad — manage
 agents, workflows, factories, collections, and files, and run chat/embeddings — using your MissionSquad
-API key. Use the hosted endpoint at `https://mcp.missionsquad.ai`, or run it locally over stdio.
+API key. Install `@missionsquad/mcp-msq` from npm and run it locally over stdio;
+MissionSquad does not currently provide a hosted MCP endpoint.
 
 Install the npm server and configuration skill with the
 [ChatGPT desktop guide](/mcp-server/chatgpt-desktop) or

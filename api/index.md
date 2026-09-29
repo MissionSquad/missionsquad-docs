@@ -206,11 +206,12 @@ See the full [MCP API documentation](/api/mcp-api/) for endpoint reference and d
   OAuth 2.0 with Dynamic Client Registration.
 - [Webhooks](/api/reference/webhooks) — trigger agents/tools from external systems.
 
-## Hosted MCP Server
+## Mission Squad MCP Server
 
-The [Mission Squad MCP Server](/mcp-server/) (`https://mcp.missionsquad.ai`) exposes this entire API to
-AI agents as Model Context Protocol tools — authenticate with your MissionSquad API key and call any of
-its 76 `msq_*` tools.
+The [Mission Squad MCP Server](/mcp-server/) exposes MissionSquad API operations as
+`msq_*` tools. Install `@missionsquad/mcp-msq` from npm and run it locally over
+stdio, authenticating upstream requests with your MissionSquad API key.
+There is currently no MissionSquad-hosted MCP endpoint.
 
 ## See also
 

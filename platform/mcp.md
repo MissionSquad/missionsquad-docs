@@ -42,10 +42,11 @@ OAuth. See [MCP Servers (Connect & OAuth)](/api/reference/mcp-servers) for the f
 
 ## Mission Squad's own MCP server
 
-To let an AI agent drive MissionSquad itself, use the hosted
-[Mission Squad MCP Server](/mcp-server/) at `https://mcp.missionsquad.ai`. It exposes the entire API
-(models, agents, workflows, factories, collections, files, and more) as `msq_*` tools, authenticated
-with your MissionSquad API key.
+To let an AI agent drive MissionSquad itself, install the local
+[Mission Squad MCP Server](/mcp-server/) from npm (`@missionsquad/mcp-msq`). It
+exposes models, agents, workflows, factories, collections, files, and other API
+operations as `msq_*` tools, authenticated with your MissionSquad API key.
+MissionSquad does not currently provide a hosted MCP endpoint.
 
 ## API parity
 

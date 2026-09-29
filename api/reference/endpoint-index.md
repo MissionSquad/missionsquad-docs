@@ -252,10 +252,11 @@ the MCP API, not the MissionSquad API.
 
 - GET `/healthz` — see [MCP API Overview](/api/mcp-api/)
 
-## Hosted MCP Server (for AI agents)
+## Mission Squad MCP Server (for AI agents)
 
-The platform-hosted [Mission Squad MCP Server](/mcp-server/) exposes the whole MissionSquad API as MCP
-tools (76 `msq_*` tools) at `https://mcp.missionsquad.ai`.
+The [Mission Squad MCP Server](/mcp-server/) exposes MissionSquad API operations as
+`msq_*` tools through the local npm package `@missionsquad/mcp-msq`.
+It currently uses stdio; MissionSquad does not provide a hosted MCP endpoint.
 
 ## See also
 

@@ -9,8 +9,6 @@ The Mission Squad MCP server (`@missionsquad/mcp-msq`) exposes the MissionSquad 
 providers, models, agents, workflows, factories, schedules, collections, vector stores, and files —
 and run chat completions and embeddings — using a single MissionSquad API key.
 
-- **Hosted endpoint:** `https://mcp.missionsquad.ai` — use the remote server without installing
-  anything.
 - **Desktop install:** run the npm package over stdio with `npx -y @missionsquad/mcp-msq@latest`.
 - **Auth:** your MissionSquad API key (`msq-...`). The server forwards it to the API as the
   `x-api-key` header.
@@ -52,35 +50,10 @@ Put your real key in the app's local MCP configuration, never in the skill ZIP o
 
 ## Connecting
 
-For npm-based desktop setup, follow one of the guides above. The hosted connection
-below is a separate integration for clients that support its hidden authentication arguments.
-
-### Hosted (remote)
-
-Point your MCP client at `https://mcp.missionsquad.ai` and authenticate with your MissionSquad API
-key. The server resolves the key from a per-call **hidden argument** named `apiKey` — a FastMCP feature
-where arguments not declared in a tool's schema are passed through to the server but never shown to the
-model. In practice you supply `apiKey` alongside each `tools/call` request; clients that support
-hidden/passthrough arguments inject it for you. You can also pass an optional `baseUrl` hidden argument
-to target a self-hosted MissionSquad API.
-
-```jsonc
-// A tools/call request carries the hidden apiKey (and optional baseUrl) in `arguments`.
-// These keys are not part of any tool's published schema, so the model never sees them.
-{
-  "method": "tools/call",
-  "params": {
-    "name": "msq_list_models",
-    "arguments": {
-      "apiKey": "msq-************************",
-      "baseUrl": "https://agents.missionsquad.ai/v1"   // optional
-    }
-  }
-}
-```
-
-> The hosted server is in active rollout. If `https://mcp.missionsquad.ai` is not yet reachable for
-> your account, use the local stdio install below — it is functionally identical.
+MissionSquad does not currently provide a hosted MCP endpoint. Install the npm
+server locally with one of the desktop guides above. The hosted MissionSquad
+REST API is the upstream service that this local server calls; it is not a remote
+MCP connection URL.
 
 ### Local (stdio)
 
@@ -247,9 +220,9 @@ the agent.
 | `msq_get_file_content` | `fileId`, `maxBytes?` | GET /v1/files/:id/content |
 | `msq_list_user_collections` | (no params) | GET /v1/user-collections |
 
-> `msq_upload_file` reads `filePath` from the **server's** local filesystem. On the hosted server you
-> cannot reference your own local files through this tool; upload via the
-> [Files API](/api/reference/files) and reference the resulting `fileId` instead.
+> `msq_upload_file` reads `filePath` from the machine running the local MCP process.
+> Use a path accessible to that process, or upload through the
+> [Files API](/api/reference/files) and reference the resulting `fileId`.
 
 ### Scheduled runs
 
