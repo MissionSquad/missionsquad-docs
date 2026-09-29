@@ -35,7 +35,7 @@ export default withMermaid({
   title: "Mission Squad Docs",
   description: "MissionSquad API and Guides",
   srcDir: ".",
-  srcExclude: ["public/downloads/**"],
+  srcExclude: ["public/downloads/**", "tasks/**"],
   cleanUrls: true,
   ignoreDeadLinks: true,
   lastUpdated: true,
@@ -52,7 +52,7 @@ export default withMermaid({
       llmstxt({
         domain: "https://docs.missionsquad.ai",
         description:
-          "MissionSquad API and platform documentation for developers and AI agents. OpenAI-compatible chat/embeddings, agents, workflows, factories, video analysis, webhooks, and a hosted MCP server.",
+          "MissionSquad API and platform documentation for developers and AI agents. OpenAI-compatible chat/embeddings, agents, workflows, factories, video analysis, webhooks, and a local npm MCP server.",
         ignoreFiles: ["**/README.md", "VITEPRESS_GUIDE.md", "tasks/**", "platform/images/**", "public/downloads/**"],
       }),
     ],

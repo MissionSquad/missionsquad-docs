@@ -272,7 +272,7 @@ disabled), `401` (OAuth re-authorization required — re-run `oauth/start`), `50
 - Admin-only routes also exist on this service for operators (server enable/disable/delete, package
   install/upgrade, server-install requests). Those require an admin account and are out of scope for
   account-level integration; see the [MCP API (Admin)](/api/mcp-api/) docs for the operator surface.
-- For the platform-hosted MCP server that exposes the *whole* MissionSquad API to AI agents (a
+- For the local npm MCP server that exposes MissionSquad API operations to AI agents (a
   different thing from connecting third-party MCP servers here), see the
   [Mission Squad MCP Server](/mcp-server/).
 
