@@ -11,16 +11,49 @@ and run chat completions and embeddings — using a single MissionSquad API key.
 
 - **Hosted endpoint:** `https://mcp.missionsquad.ai` — use the remote server without installing
   anything.
-- **Local:** run it over stdio with `npx -y @missionsquad/mcp-msq`.
+- **Desktop install:** run the npm package over stdio with `npx -y @missionsquad/mcp-msq@latest`.
 - **Auth:** your MissionSquad API key (`msq-...`). The server forwards it to the API as the
   `x-api-key` header.
-- **Tools:** 76 tools, all prefixed `msq_`, returning pretty-printed JSON.
+- **Tools:** all prefixed `msq_`, returning JSON text; some tools return compact summaries.
 
 Every tool call ultimately hits the MissionSquad REST API documented in the
-[API reference](/api/) — the MCP server is a thin, typed wrapper, so the request/response shapes match
-the corresponding REST endpoints.
+[API reference](/api/). Use the MCP tool's published schema for arguments and outputs;
+summary tools intentionally return less data than the corresponding REST endpoint.
+
+## Desktop setup
+
+Install **both** components: the npm MCP server connects the app to your account, and
+the `msq-config-agent` skill teaches it how to configure agents, workflows, factories,
+schedules, and Agent Pages. The skill does not install the server or contain an API key.
+
+| App | MCP server and skill instructions |
+| --- | --- |
+| ChatGPT desktop (local MCP) | [ChatGPT desktop setup](/mcp-server/chatgpt-desktop) |
+| Claude Desktop (Chat) | [Claude desktop setup](/mcp-server/claude-desktop) |
+
+Both guides include the same portable [configuration skill ZIP](/downloads/msq-config-agent.zip).
+Recording a workflow is not required.
+
+### Prerequisites
+
+- Install [Node.js](https://nodejs.org/en/download) version **20 or later**, with npm/npx.
+  In Terminal or PowerShell, check `node --version`, `npm --version`, and `npx --version`.
+- Have your MissionSquad account's API key (`msq-...`) ready. This is the
+  [MissionSquad API credential](/api/#authentication), not an OpenAI or Anthropic provider key.
+- Use `https://agents.missionsquad.ai/v1` as the API base URL, or your own
+  MissionSquad deployment's API URL ending in `/v1`.
+- Install a current desktop app with local MCP enabled by your workspace, and allow
+  npm registry access for the package download.
+
+The published package is **`@missionsquad/mcp-msq`**. `npx -y` installs it from npm
+as needed and starts it for the desktop app; a separate global npm install is unnecessary.
+The app owns the process, so do not leave a manually launched server running in a terminal.
+Put your real key in the app's local MCP configuration, never in the skill ZIP or a chat prompt.
 
 ## Connecting
+
+For npm-based desktop setup, follow one of the guides above. The hosted connection
+below is a separate integration for clients that support its hidden authentication arguments.
 
 ### Hosted (remote)
 
@@ -51,15 +84,16 @@ to target a self-hosted MissionSquad API.
 
 ### Local (stdio)
 
-Run the published package directly. It speaks the MCP **stdio** transport, which every MCP client
-supports.
+Run the published package with a client that supports local MCP **stdio** processes.
+The following is the JSON configuration shape used by Claude Desktop; ChatGPT desktop
+uses the [MCP settings or TOML configuration](/mcp-server/chatgpt-desktop#install-the-mcp-server).
 
 ```jsonc
 {
   "mcpServers": {
     "mission-squad": {
       "command": "npx",
-      "args": ["-y", "@missionsquad/mcp-msq"],
+      "args": ["-y", "@missionsquad/mcp-msq@latest"],
       "env": {
         "MSQ_API_KEY": "msq-************************",
         "MSQ_BASE_URL": "https://agents.missionsquad.ai/v1"
