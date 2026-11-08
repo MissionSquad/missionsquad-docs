@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, reactive, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { streamAsk, type Message } from '../lib/streamAsk';
+import { renderAnswerMarkdown } from '../lib/renderMarkdown';
 
 type Embedding = readonly number[];
 
@@ -29,6 +30,8 @@ const open = ref(false);
 const question = ref('');
 const loading = ref(false);
 const answer = ref('');
+// The model answers in markdown; render it (safely) instead of showing raw text.
+const answerHtml = computed(() => renderAnswerMarkdown(answer.value));
 const error = ref<string | null>(null);
 
 const answerBoxRef = ref<HTMLDivElement | null>(null);
@@ -207,9 +210,8 @@ onBeforeUnmount(() => {
         <div v-if="loading" class="ask-loading">Thinking…</div>
         <div v-if="error" class="ask-error">{{ error }}</div>
 
-        <div v-if="answer" ref="answerBoxRef" class="answer-box">
-          {{ answer }}
-        </div>
+        <!-- answerHtml is sanitized by renderAnswerMarkdown (raw HTML escaped, unsafe links dropped) -->
+        <div v-if="answer" ref="answerBoxRef" class="answer-box" v-html="answerHtml"></div>
       </div>
     </div>
   </div>
@@ -317,7 +319,93 @@ onBeforeUnmount(() => {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  /* the panel mounts inside the VitePress navbar, which sets white-space: nowrap */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+  font-size: .95rem;
 }
+
+/* Rendered markdown inside the answer (v-html content needs :deep) */
+.answer-box > :deep(:first-child) { margin-top: 0; }
+.answer-box > :deep(:last-child) { margin-bottom: 0; }
+.answer-box :deep(p) { margin: 0 0 .75rem; }
+.answer-box :deep(h1),
+.answer-box :deep(h2),
+.answer-box :deep(h3),
+.answer-box :deep(h4) {
+  margin: 1.1rem 0 .5rem;
+  line-height: 1.3;
+  font-weight: 600;
+  border: none;
+  padding: 0;
+}
+.answer-box :deep(h1) { font-size: 1.2rem; }
+.answer-box :deep(h2) { font-size: 1.1rem; }
+.answer-box :deep(h3),
+.answer-box :deep(h4) { font-size: 1rem; }
+.answer-box :deep(ul),
+.answer-box :deep(ol) { margin: 0 0 .75rem; padding-left: 1.4rem; }
+.answer-box :deep(ul) { list-style: disc; }
+.answer-box :deep(ol) { list-style: decimal; }
+.answer-box :deep(li) { margin: .2rem 0; }
+.answer-box :deep(li > p) { margin: 0; }
+.answer-box :deep(a) {
+  color: var(--vp-c-brand-1);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.answer-box :deep(a:hover) { color: var(--vp-c-brand-2); }
+.answer-box :deep(strong) { font-weight: 600; }
+.answer-box :deep(code) {
+  font-family: var(--vp-font-family-mono);
+  font-size: .85em;
+  background: var(--vp-code-bg);
+  color: var(--vp-code-color);
+  padding: .15em .35em;
+  border-radius: 4px;
+}
+.answer-box :deep(pre) {
+  margin: 0 0 .75rem;
+  padding: .75rem 1rem;
+  background: var(--vp-code-block-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+.answer-box :deep(pre code) {
+  background: transparent;
+  color: var(--vp-c-text-1);
+  padding: 0;
+  font-size: .85rem;
+  white-space: pre;
+}
+.answer-box :deep(blockquote) {
+  margin: 0 0 .75rem;
+  padding-left: .75rem;
+  border-left: 3px solid var(--vp-c-divider);
+  color: var(--vp-c-text-2);
+}
+.answer-box :deep(hr) {
+  border: none;
+  border-top: 1px solid var(--vp-c-divider);
+  margin: 1rem 0;
+}
+.answer-box :deep(table) {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 0 0 .75rem;
+  font-size: .9rem;
+}
+.answer-box :deep(th),
+.answer-box :deep(td) {
+  border: 1px solid var(--vp-c-divider);
+  padding: .4rem .6rem;
+  text-align: left;
+  vertical-align: top;
+}
+.answer-box :deep(th) { background: var(--vp-c-bg-alt); font-weight: 600; }
 </style>

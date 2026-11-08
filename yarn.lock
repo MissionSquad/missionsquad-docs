@@ -2545,7 +2545,7 @@ markdown-title@^1.0.2:
   resolved "https://registry.npmjs.org/markdown-title/-/markdown-title-1.0.2.tgz#529b0f9488236905a910c08372b6ce7c9e66184f"
   integrity sha512-MqIQVVkz+uGEHi3TsHx/czcxxCbRIL7sv5K5DnYw/tI+apY54IbPefV/cmgxp6LoJSEx/TqcHdLs/298afG5QQ==
 
-marked@^15.0.7:
+marked@^15.0.11, marked@^15.0.7:
   version "15.0.12"
   resolved "https://registry.yarnpkg.com/marked/-/marked-15.0.12.tgz#30722c7346e12d0a2d0207ab9b0c4f0102d86c4e"
   integrity sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==
