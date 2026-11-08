@@ -11,6 +11,8 @@ import { Marked, type Tokens } from 'marked';
  * - links are kept only for http(s), mailto, and site-relative URLs
  *   (no `javascript:`/`data:`); external links open in a new tab;
  * - images are rendered as their alt text (no remote image loads).
+ * - ```mermaid fences become placeholders that askMermaid.ts renders with
+ *   Mermaid in strict security mode (source shown as code until then).
  *
  * Everything else (paragraphs, lists, code, tables, emphasis) uses marked's
  * default renderer, which escapes text content.
@@ -55,6 +57,14 @@ const markdown = new Marked({
     },
     image({ text }: Tokens.Image): string {
       return escapeHtml(text);
+    },
+    // ```mermaid fences become a placeholder for askMermaid.ts to fill with
+    // the diagram; until then (and if the diagram is invalid) the escaped
+    // source shows as a normal code block. Other languages use the default.
+    code({ text, lang }: Tokens.Code): string | false {
+      if ((lang ?? '').trim().toLowerCase() !== 'mermaid') return false;
+      const source = escapeHtml(text);
+      return `<div class="ask-mermaid" data-source="${source}"><pre><code class="language-mermaid">${source}</code></pre></div>\n`;
     }
   }
 });
