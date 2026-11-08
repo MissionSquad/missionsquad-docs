@@ -17,6 +17,16 @@ Mission Squad Platform enforces account‑level isolation and secure handling of
   - Cloud‑hosted: Managed by Mission Squad; keys stored and encrypted in our infrastructure.
   - Customer‑hosted: Keys and data remain within your infrastructure, subject to your security controls.  [Contact for self-hosted options](https://missionsquad.ai/contact)
 
+## Execution environments
+
+When agents use the [Execution Environment](/platform/execution-environment):
+
+- Every active session runs in its own microVM; programs run as an unprivileged user with cgroup and seccomp limits and a read-only base system.
+- No host mounts, Docker socket, cloud credentials, or database access reach the guest, and platform/provider credentials never enter it.
+- Public internet is reachable by default; private, local, metadata, and infrastructure address ranges are blocked, sessions can open fully offline, and inbound ports are closed.
+- Workspaces are owned by one user, and execution runs only for the signed-in owner in chat — not through API keys or other users' shared agents.
+- Environment settings are for non-secret values; don't put credentials in a workspace.
+
 ## Recommended practices
 
 - Separate providers per environment or region (e.g., “openai‑prod”, “openai‑eu”).  
