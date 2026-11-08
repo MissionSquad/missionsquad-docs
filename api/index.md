@@ -205,6 +205,8 @@ See the full [MCP API documentation](/api/mcp-api/) for endpoint reference and d
 - [MCP Servers (Connect & OAuth)](/api/reference/mcp-servers) — connect remote MCP servers, including
   OAuth 2.0 with Dynamic Client Registration.
 - [Webhooks](/api/reference/webhooks) — trigger agents/tools from external systems.
+- [Evals](/api/reference/evals) — compare models on your own examples (quality, speed, cost) and tune
+  prompts and settings with Improve mode.
 
 ## Mission Squad MCP Server
 
@@ -220,6 +222,7 @@ There is currently no MissionSquad-hosted MCP endpoint.
 - [Embeddings](/api/reference/embeddings)
 - [Providers](/api/reference/providers)
 - [Models](/api/reference/models)
+- [Evals](/api/reference/evals)
 - [Agents](/api/reference/agents)
 - [Workflows](/api/reference/workflows)
 - [Factories](/api/reference/factories)

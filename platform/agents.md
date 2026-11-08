@@ -12,8 +12,8 @@ Purpose: Specialize a model with a system prompt, optional tools, and optional R
 
 1) Agent Name / Description — used for lookup in lists and in the API (`model: "<agent-name>"`).  
 2) Agent Prompt — your system prompt (persona, rules, success criteria).  
-3) Agent Model — pick the named model you saved on the Models screen.  
-4) Use Tools (MCP) — enable and then pick specific servers and functions the agent may call. Principle of least privilege.  
+3) Agent Model — pick the named model you saved on the Models screen. Not sure which one? Compare candidates with an [eval](/platform/evals), and use **Copy from agent** to test this agent's prompt.  
+4) Use Tools (MCP) — enable and then pick specific servers and functions the agent may call. Principle of least privilege. Select **Execution Environments** to let the agent run code and work with files in an isolated workspace — see [Execution Environment](/platform/execution-environment).  
 5) Use Embeddings (RAG) — toggle and select one or more collections to search and inject into the agent’s context.  
 6) Publish Agent (coming soon) — exposes to your account’s shared lists (and, if enabled elsewhere, to Slack). Not public outside your account and shared list.
 

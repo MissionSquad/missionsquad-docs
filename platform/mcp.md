@@ -40,11 +40,15 @@ The flow is: discover the server's OAuth metadata → register it → install it
 (approve in a popup) → call its tools. For API‑key servers, save per‑server secrets instead of running
 OAuth. See [MCP Servers (Connect & OAuth)](/api/reference/mcp-servers) for the full API.
 
+## Execution Environments
+
+When enabled for your deployment, **Execution Environments** appears under Platform Servers. It gives agents a private Linux workspace — commands, Python/Node/TypeScript, files, save and resume, ZIP downloads — in an isolated microVM. See [Execution Environment](/platform/execution-environment).
+
 ## Mission Squad's own MCP server
 
 To let an AI agent drive MissionSquad itself, install the local
 [Mission Squad MCP Server](/mcp-server/) from npm (`@missionsquad/mcp-msq`). It
-exposes models, agents, workflows, factories, collections, files, and other API
+exposes models, agents, workflows, factories, evals, collections, files, and other API
 operations as `msq_*` tools, authenticated with your MissionSquad API key.
 MissionSquad does not currently provide a hosted MCP endpoint.
 

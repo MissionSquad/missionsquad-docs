@@ -235,6 +235,30 @@ the agent.
 | `msq_toggle_scheduled_run` | `id` |
 | `msq_get_scheduled_run_results` | `id` |
 
+### Model evals
+
+Requires MCP server **0.8.0** or later and MissionSquad API 1.89 or later. Creating, updating, listing, and previewing make no model calls; `msq_start_eval_run` starts paid work. See the [Evals guide](/platform/evals).
+
+| Tool | Params | REST |
+| --- | --- | --- |
+| `msq_get_eval_options` | (no params) | [GET /v1/core/evals/options](/api/reference/evals) |
+| `msq_list_evals` | `limit?`, `offset?` | GET /v1/core/evals |
+| `msq_get_eval` | `suiteId` | GET /v1/core/evals/:id |
+| `msq_create_eval` | `definition` | POST /v1/core/evals |
+| `msq_update_eval` | `suiteId`, `revision`, `definition` (whole replacement) | PUT /v1/core/evals/:id |
+| `msq_delete_eval` | `suiteId` | DELETE /v1/core/evals/:id |
+| `msq_preview_eval_run` | `suiteId`, `revision` | POST /v1/core/eval-runs/preview |
+| `msq_start_eval_run` | `suiteId`, `revision`, `fingerprint`, `idempotencyKey` | POST /v1/core/eval-runs |
+| `msq_list_eval_runs` | `limit?`, `offset?` | GET /v1/core/eval-runs |
+| `msq_get_eval_run` | `runId` | GET /v1/core/eval-runs/:id |
+| `msq_list_eval_results` | `runId`, `limit?`, `offset?`, `modelId?`, `caseId?`, `role?` | GET /v1/core/eval-runs/:id/results |
+| `msq_get_eval_result` | `runId`, `trialId` | GET /v1/core/eval-runs/:id/results/:trialId |
+| `msq_cancel_eval_run` | `runId` | POST /v1/core/eval-runs/:id/cancel |
+| `msq_export_eval_run` | `runId`, `format?` (`json` \| `csv`), `maxBytes?` | GET /v1/core/eval-runs/:id/export |
+| `msq_delete_eval_run` | `runId` | DELETE /v1/core/eval-runs/:id |
+
+Take `modelId` values from `msq_get_eval_options` (provider model names and agent IDs are not model IDs). Persist the `idempotencyKey` before calling `msq_start_eval_run` and retry with the same key after a lost response — a new key can start new paid work. Exports are returned inline and fail above `maxBytes` (default 1 MiB, maximum 8 MiB). Invalid arguments return `INVALID_TOOL_ARGUMENTS` with per-field hints and make no API request.
+
 ## Flagship tool schemas (verbatim)
 
 `msq_create_workflow`:

@@ -14,8 +14,10 @@ This section documents the Mission Squad Platform UI. It covers dashboard naviga
 
 - [Providers](/platform/providers) — connect and manage upstream AI providers
 - [Models](/platform/models) — discover vendor models and save named configurations
+- [Evals](/platform/evals) — compare models on your own examples and tune prompts and settings
 - [Agents](/platform/agents) — create agents (prompts, models, tools, RAG)
 - [MCP (Tools)](/platform/mcp) — connect tool servers and inspect available functions
+- [Execution Environment](/platform/execution-environment) — give agents a private Linux workspace to run code and work with files (early access)
 - [Prompt Studio](/platform/prompt-studio) — iterate prompts, stream events, save back to agents
 - [Embeddings](/platform/embeddings) — upload files, manage vector stores, diagnostics
 - [Workflows](/platform/workflows) — compose multi‑agent pipelines with data interpolation
@@ -32,8 +34,10 @@ This section documents the Mission Squad Platform UI. It covers dashboard naviga
 
 - Providers: secure, per‑account credentials for model vendors (OpenAI, Google, Anthropic, Groq, OpenAI‑compatible runtimes).
 - Models: named configurations per provider model (temperature, max tokens, etc.).
+- Evals: run the same examples against several models and compare pass rate, speed, and cost; Improve mode tunes prompts and settings per model.
 - Agents: model + system prompt with optional Tools (MCP) and RAG collections.
 - MCP: Model Context Protocol servers that expose callable tools.
+- Execution Environment: an MCP server that gives agents an isolated microVM workspace for commands, code, and files.
 - Prompt Studio: scratchpad to test agents/models and watch tool events.
 - Embeddings: files and vector stores used for RAG.
 - Workflows: multi‑agent orchestration (helpers → main) with data interpolation.

@@ -28,6 +28,10 @@ Purpose: Select and configure the models you want to use with your preferred par
 - List (all regular models plus chat-eligible agents): `GET /v1/models`  
 See [Models](/api/reference/models)
 
+## Choosing between models
+
+Not sure which model fits a task? Run an [eval](/platform/evals): the same examples and checks against several models, with pass rate, speed, and cost side by side.
+
 ## Gotchas
 
 - If a model fails at runtime, confirm the provider key scope and that your account has access to that model tier.

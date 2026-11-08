@@ -26,6 +26,24 @@ A consolidated list of user-facing MissionSquad API endpoints with links to deta
 - POST `/v1/core/add/model` — see [Models](/api/reference/models)
 - POST `/v1/core/delete/model` — see [Models](/api/reference/models)
 
+### Evals
+
+- GET `/v1/core/evals/options` — see [Evals](/api/reference/evals)
+- GET `/v1/core/evals` — see [Evals](/api/reference/evals)
+- POST `/v1/core/evals` — see [Evals](/api/reference/evals)
+- GET `/v1/core/evals/:id` — see [Evals](/api/reference/evals)
+- PUT `/v1/core/evals/:id` — see [Evals](/api/reference/evals)
+- DELETE `/v1/core/evals/:id` — see [Evals](/api/reference/evals)
+- POST `/v1/core/eval-runs/preview` — see [Evals](/api/reference/evals)
+- POST `/v1/core/eval-runs` — see [Evals](/api/reference/evals)
+- GET `/v1/core/eval-runs` — see [Evals](/api/reference/evals)
+- GET `/v1/core/eval-runs/:id` — see [Evals](/api/reference/evals)
+- POST `/v1/core/eval-runs/:id/cancel` — see [Evals](/api/reference/evals)
+- GET `/v1/core/eval-runs/:id/results` — see [Evals](/api/reference/evals)
+- GET `/v1/core/eval-runs/:id/results/:trialId` — see [Evals](/api/reference/evals)
+- GET `/v1/core/eval-runs/:id/export` — see [Evals](/api/reference/evals)
+- DELETE `/v1/core/eval-runs/:id` — see [Evals](/api/reference/evals)
+
 ### Agents
 
 - GET `/v1/core/agents` — see [Agents](/api/reference/agents)
@@ -266,6 +284,7 @@ It currently uses stdio; MissionSquad does not provide a hosted MCP endpoint.
 - [Embeddings](/api/reference/embeddings)
 - [Providers](/api/reference/providers)
 - [Models](/api/reference/models)
+- [Evals](/api/reference/evals)
 - [Agents](/api/reference/agents)
 - [Workflows](/api/reference/workflows)
 - [Factories](/api/reference/factories)
