@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { useData } from 'vitepress';
 import { streamAsk, type Message } from '../lib/streamAsk';
 import { renderAnswerMarkdown } from '../lib/renderMarkdown';
+import { renderAnswerDiagrams } from '../lib/askMermaid';
 
 type Embedding = readonly number[];
 
@@ -35,6 +37,18 @@ const answerHtml = computed(() => renderAnswerMarkdown(answer.value));
 const error = ref<string | null>(null);
 
 const answerBoxRef = ref<HTMLDivElement | null>(null);
+const { isDark } = useData();
+
+/** Turn ```mermaid blocks in the finished answer into diagrams. */
+async function renderDiagrams(): Promise<void> {
+  await nextTick();
+  if (answerBoxRef.value) await renderAnswerDiagrams(answerBoxRef.value, isDark.value);
+}
+
+// Re-render diagrams in the current answer when the docs theme switches.
+watch(isDark, () => {
+  if (!loading.value && answer.value) void renderDiagrams();
+});
 function scrollAnswerToBottom(): void {
   const el = answerBoxRef.value;
   if (el) el.scrollTop = el.scrollHeight;
@@ -131,7 +145,9 @@ async function askNow(): Promise<void> {
     error.value = e instanceof Error ? e.message : String(e);
   } finally {
     loading.value = false;
-    await nextTick();
+    // Diagrams render only once the answer is complete — a half-streamed
+    // diagram can't be parsed, so it shows as code until then.
+    await renderDiagrams();
     scrollAnswerToBottom();
   }
 }
@@ -408,4 +424,20 @@ onBeforeUnmount(() => {
   vertical-align: top;
 }
 .answer-box :deep(th) { background: var(--vp-c-bg-alt); font-weight: 600; }
+.answer-box :deep(.ask-mermaid--rendered) {
+  display: block;
+  margin: 0 0 .75rem;
+  padding: .75rem;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+/* natural size (set in askMermaid.ts), centered when narrower than the box,
+   horizontally scrollable when wider */
+.answer-box :deep(.ask-mermaid--rendered svg) {
+  display: block;
+  margin: 0 auto;
+  height: auto;
+}
 </style>
