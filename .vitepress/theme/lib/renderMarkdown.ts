@@ -12,7 +12,8 @@ import { Marked, type Tokens } from 'marked';
  *   (no `javascript:`/`data:`); external links open in a new tab;
  * - images are rendered as their alt text (no remote image loads).
  * - ```mermaid fences become placeholders that askMermaid.ts renders with
- *   Mermaid in strict security mode (source shown as code until then).
+ *   Mermaid in strict security mode (source shown as code until then);
+ * - other code blocks get a copy button (VitePress code-block markup).
  *
  * Everything else (paragraphs, lists, code, tables, emphasis) uses marked's
  * default renderer, which escapes text content.
@@ -58,13 +59,29 @@ const markdown = new Marked({
     image({ text }: Tokens.Image): string {
       return escapeHtml(text);
     },
-    // ```mermaid fences become a placeholder for askMermaid.ts to fill with
-    // the diagram; until then (and if the diagram is invalid) the escaped
-    // source shows as a normal code block. Other languages use the default.
-    code({ text, lang }: Tokens.Code): string | false {
-      if ((lang ?? '').trim().toLowerCase() !== 'mermaid') return false;
-      const source = escapeHtml(text);
-      return `<div class="ask-mermaid" data-source="${source}"><pre><code class="language-mermaid">${source}</code></pre></div>\n`;
+    code({ text, lang, escaped }: Tokens.Code): string {
+      const language = (lang ?? '').match(/^\S*/)?.[0] ?? '';
+      // ```mermaid fences become a placeholder for askMermaid.ts to fill with
+      // the diagram; until then (and if the diagram is invalid) the escaped
+      // source shows as a plain code block, without a copy button.
+      if (language.toLowerCase() === 'mermaid') {
+        const source = escapeHtml(text);
+        return `<div class="ask-mermaid" data-source="${source}"><pre><code class="language-mermaid">${source}</code></pre></div>\n`;
+      }
+      // Other code blocks use the same markup as VitePress code blocks
+      // (div.language-* > button.copy + span.lang + pre), so the theme's
+      // global copy-code click handler copies them exactly like code on docs
+      // pages (including stripping `$ ` prompts from shell blocks).
+      const body = text.replace(/\n$/, '');
+      const code = `${escaped ? body : escapeHtml(body)}\n`;
+      const langLabel = escapeHtml(language);
+      const codeClass = language ? ` class="language-${langLabel}"` : '';
+      return (
+        `<div class="language-${langLabel || 'text'} ask-code">` +
+        '<button type="button" title="Copy code" aria-label="Copy code" class="copy"></button>' +
+        `<span class="lang">${langLabel}</span>` +
+        `<pre><code${codeClass}>${code}</code></pre></div>\n`
+      );
     }
   }
 });
