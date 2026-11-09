@@ -4,6 +4,7 @@ import { useData } from 'vitepress';
 import { streamAsk, type Message } from '../lib/streamAsk';
 import { renderAnswerMarkdown } from '../lib/renderMarkdown';
 import { renderAnswerDiagrams } from '../lib/askMermaid';
+import { copyText } from '../lib/clipboard';
 
 type Embedding = readonly number[];
 
@@ -48,6 +49,35 @@ async function renderDiagrams(): Promise<void> {
 // Re-render diagrams in the current answer when the docs theme switches.
 watch(isDark, () => {
   if (!loading.value && answer.value) void renderDiagrams();
+});
+
+// The panel is removed from the page while closed, so reopening it rebuilds
+// the answer from markdown with diagram placeholders. Render diagrams again
+// whenever a new answer element is mounted for a finished answer. (While an
+// answer is streaming, askNow renders them once it completes.)
+watch(answerBoxRef, (el) => {
+  if (el && !loading.value) void renderDiagrams();
+});
+
+/** Full-width panel; kept while the panel is closed and reopened. */
+const expanded = ref(false);
+function toggleExpanded(): void {
+  expanded.value = !expanded.value;
+}
+
+/** Copy the whole answer as markdown. */
+const answerCopyState = ref<'idle' | 'copied' | 'failed'>('idle');
+let answerCopyTimer: ReturnType<typeof setTimeout> | undefined;
+async function copyAnswer(): Promise<void> {
+  const copied = await copyText(answer.value);
+  answerCopyState.value = copied ? 'copied' : 'failed';
+  clearTimeout(answerCopyTimer);
+  answerCopyTimer = setTimeout(() => { answerCopyState.value = 'idle'; }, 2000);
+}
+const answerCopyLabel = computed(() => {
+  if (answerCopyState.value === 'copied') return 'Copied';
+  if (answerCopyState.value === 'failed') return 'Copy failed';
+  return 'Copy answer';
 });
 function scrollAnswerToBottom(): void {
   const el = answerBoxRef.value;
@@ -182,6 +212,7 @@ onMounted(() => {
   window.addEventListener('ms-ask-open', onAskOpen as EventListener);
 });
 onBeforeUnmount(() => {
+  clearTimeout(answerCopyTimer);
   window.removeEventListener('keydown', onKeydown);
   window.removeEventListener('ms-ask-open', onAskOpen as EventListener);
 });
@@ -197,10 +228,37 @@ onBeforeUnmount(() => {
     <div v-if="open" class="ms-ask-overlay" @click="closePanel" />
 
     <!-- Floating Panel -->
-    <div v-if="open" class="ms-ask-panel" role="dialog" aria-label="Ask the docs" aria-modal="true">
+    <div
+      v-if="open"
+      class="ms-ask-panel"
+      :class="{ 'ms-ask-panel--expanded': expanded }"
+      role="dialog"
+      aria-label="Ask the docs"
+      aria-modal="true"
+    >
       <div class="ask-header">
         <div class="ask-title">Ask the docs</div>
-        <button class="ask-close" type="button" @click="closePanel" aria-label="Close">×</button>
+        <div class="ask-header-actions">
+          <button
+            class="ask-icon-btn ask-expand"
+            type="button"
+            @click="toggleExpanded"
+            :aria-pressed="expanded ? 'true' : 'false'"
+            :aria-label="expanded ? 'Restore panel width' : 'Expand panel to full width'"
+            :title="expanded ? 'Restore width' : 'Full width'"
+          >
+            <!-- arrows pointing out (expand) / in (restore) -->
+            <svg v-if="!expanded" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+            <svg v-else viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" />
+              <line x1="14" y1="10" x2="21" y2="3" /><line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+          </button>
+          <button class="ask-icon-btn ask-close" type="button" @click="closePanel" aria-label="Close" title="Close">×</button>
+        </div>
       </div>
 
       <div class="ask-body">
@@ -228,6 +286,19 @@ onBeforeUnmount(() => {
 
         <!-- answerHtml is sanitized by renderAnswerMarkdown (raw HTML escaped, unsafe links dropped) -->
         <div v-if="answer" ref="answerBoxRef" class="answer-box" v-html="answerHtml"></div>
+        <div v-if="answer && !loading" class="answer-actions">
+          <button
+            class="ask-text-btn"
+            type="button"
+            @click="copyAnswer"
+            title="Copy the answer as markdown"
+          >
+            {{ answerCopyLabel }}
+          </button>
+          <span class="answer-copy-status" role="status" aria-live="polite">
+            {{ answerCopyState === 'copied' ? 'Answer copied to clipboard' : '' }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -285,13 +356,46 @@ onBeforeUnmount(() => {
   gap: .5rem;
   margin-bottom: .5rem;
 }
+/* Full width: same symmetric 16px inset on both sides */
+.ms-ask-panel--expanded {
+  left: 16px;
+  width: auto;
+  max-width: none;
+}
+
 .ask-title { font-weight: 600; }
-.ask-close {
+.ask-header-actions { display: flex; align-items: center; gap: .4rem; }
+.ask-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--vp-c-divider);
   background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-1);
   border-radius: .5rem;
   width: 2rem; height: 2rem; line-height: 1.9rem; text-align: center;
+}
+.ask-icon-btn:hover { background: var(--vp-c-bg); }
+.ask-expand { color: var(--vp-c-text-2); }
+.ask-expand:hover { color: var(--vp-c-text-1); }
+
+/* Actions under a finished answer */
+.answer-actions { display: flex; justify-content: flex-end; }
+.ask-text-btn {
+  padding: .3rem .65rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: .5rem;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: .85rem;
+}
+.ask-text-btn:hover { background: var(--vp-c-bg); color: var(--vp-c-text-1); }
+.answer-copy-status {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .ask-body { display: flex; flex-direction: column; gap: .5rem; flex: 1; min-height: 0; }
@@ -397,6 +501,85 @@ onBeforeUnmount(() => {
   font-size: .85rem;
   white-space: pre;
 }
+/* Code blocks with a copy button. Markup matches VitePress code blocks, and
+   the theme's global copy-code handler does the copying; these mirror the
+   .vp-doc copy-button styles (vp-doc.css), which don't reach this panel. */
+.answer-box :deep(.ask-code) {
+  position: relative;
+  margin: 0 0 .75rem;
+}
+.answer-box :deep(.ask-code > pre) { margin: 0; padding-right: 3.25rem; }
+.answer-box :deep(.ask-code > button.copy) {
+  direction: ltr;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 3;
+  border: 1px solid var(--vp-code-copy-code-border-color);
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  background-color: var(--vp-code-copy-code-bg);
+  background-image: var(--vp-icon-copy);
+  background-position: 50%;
+  background-size: 16px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  opacity: 0;
+  transition: border-color .25s, background-color .25s, opacity .25s;
+}
+.answer-box :deep(.ask-code:hover > button.copy),
+.answer-box :deep(.ask-code > button.copy:focus) { opacity: 1; }
+.answer-box :deep(.ask-code > button.copy:hover),
+.answer-box :deep(.ask-code > button.copy.copied) {
+  border-color: var(--vp-code-copy-code-hover-border-color);
+  background-color: var(--vp-code-copy-code-hover-bg);
+}
+.answer-box :deep(.ask-code > button.copy.copied) {
+  opacity: 1;
+  border-radius: 0 4px 4px 0;
+  background-image: var(--vp-icon-copied);
+}
+.answer-box :deep(.ask-code > button.copy.copied::before) {
+  position: relative;
+  top: -1px;
+  transform: translateX(calc(-100% - 1px));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--vp-code-copy-code-hover-border-color);
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+  padding: 0 10px;
+  width: fit-content;
+  height: 32px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vp-code-copy-code-active-text);
+  background-color: var(--vp-code-copy-code-hover-bg);
+  white-space: nowrap;
+  content: var(--vp-code-copy-copied-text-content);
+}
+.answer-box :deep(.ask-code > span.lang) {
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  z-index: 2;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  user-select: none;
+  color: var(--vp-code-lang-color);
+  transition: opacity .25s;
+}
+.answer-box :deep(.ask-code:hover > span.lang),
+.answer-box :deep(.ask-code > button.copy:focus + span.lang) { opacity: 0; }
+/* touch screens have no hover: keep the copy button visible */
+@media (hover: none) {
+  .answer-box :deep(.ask-code > button.copy) { opacity: 1; }
+  .answer-box :deep(.ask-code > span.lang) { opacity: 0; }
+}
+
 .answer-box :deep(blockquote) {
   margin: 0 0 .75rem;
   padding-left: .75rem;
